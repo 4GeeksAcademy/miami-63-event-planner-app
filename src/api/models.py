@@ -16,6 +16,7 @@ class User(db.Model):
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     dob = db.Column(db.Date, nullable=False)
+    
 
     def __repr__(self):
         return f'<User {self.email}>'
@@ -38,6 +39,15 @@ class Favorites(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+    event_name = db.Column(db.String(100), nullable=False)
+    event_image = db.Column(db.String(255), nullable=True)
+    event_start = db.Column(db.DateTime, nullable=False)
+    event_end = db.Column(db.DateTime, nullable=True)
+    street = db.Column(db.String(120), nullable=False)
+    city = db.Column(db.String(50), nullable=False)
+    state = db.Column(db.String(50), nullable=False)
+    zip_code = db.Column(db.String(20), nullable=False)
+    country = db.Column(db.String(50), nullable=False)
     user = db.relationship('User', backref=db.backref('favorites', lazy=True))
 
     def __repr__(self):
@@ -47,7 +57,16 @@ class Favorites(db.Model):
         return {
             "id": self.id,
             "user_id": self.user_id,
-            "event_id": self.event_id   
+            "event_id": self.event_id,
+            "event_name": self.event_name,
+            "event_image": self.event_image,
+            "event_start": self.event_start.isoformat(),
+            "event_end": self.event_end.isoformat() if self.event_end else None,
+            "street": self.street,
+            "city": self.city,
+            "state": self.state,
+            "zip_code": self.zip_code,
+            "country": self.country   
         }
     
 
