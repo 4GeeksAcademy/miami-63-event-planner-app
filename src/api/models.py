@@ -22,7 +22,7 @@ class User(db.Model):
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     dob = db.Column(db.Date, nullable=False)
-    
+    address = db.Column(db.JSON, nullable=True)
 
     def __repr__(self):
         return f'<User {self.email}>'
@@ -38,8 +38,13 @@ class User(db.Model):
             "id": self.id,
             "email": self.email,
             "dob": self.dob.isoformat(),
+            "address": self.address,
             # Do not serialize the password, it's a security breach
         }
+    
+    @classmethod
+    def find_by_email(cls, email):
+        return cls.query.filter_by(email=email).first()
     
 class Favorites(db.Model):
     id = db.Column(db.Integer, primary_key=True)
