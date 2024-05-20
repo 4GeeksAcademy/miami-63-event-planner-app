@@ -16,3 +16,16 @@ bcrypt.init_app(app)
 jwt = JWTManager(app)
 CORS(app)
 
+@app.route('api/users', methods=['post'])
+def create_user():
+    data = request.get_json()
+    new_user = User(
+        email=data['email'],
+        is_active=data.get('is_active', True),
+        dob=datetime.strptime(data['dob'], %Y-%m-%d').date(),
+        address=data.get('address')                      
+    )
+    new_user.set_password(data['password'])
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify(new_user.serialize()), 201
