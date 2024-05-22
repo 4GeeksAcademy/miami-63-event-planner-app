@@ -75,45 +75,7 @@ def get_favorites(user_id):
     if get_jwt_identity() !=user_id:
         return jsonify({"msg": "Unauthorized"}), 403
     
-        data = request.get_json()
-    user.email = data.get('email', user.email)
-    user.is_active = data.get('is_active', user.is_active)
-    user.dob = datetime.strptime(data['dob'], '%Y-%m-%d').date() if 'dob' in data else user.dob
-    user.address = data.get('address', user.address)  # Update address field
-    if 'password' in data:
-        user.set_password(data['password'])
-
-    db.session.commit()
-    return jsonify(user.serialize()), 200
-
-@app.route('/api/favorites', methods=['POST'])
-@jwt_required()
-def add_favorite():
-    data = request.get_json()
-    new_favorite = Favorites(
-        user_id=get_jwt_identity(),
-        event_id=data['event_id'],
-        event_name=data['event_name'],
-        event_image=data.get('event_image', ''),
-        event_start=datetime.fromisoformat(data['event_start']),
-        event_end=datetime.fromisoformat(data['event_end']) if data['event_end'] else None,
-        street=data['street'],
-        city=data['city'],
-        state=data['state'],
-        zip_code=data['zip_code'],
-        country=data['country']
-    )
-    db.session.add(new_favorite)
-    db.session.commit()
-    return jsonify(new_favorite.serialize()), 201
-
-@app.route('/api/favorites/<int:user_id>', methods=['GET'])
-@jwt_required()
-def get_favorites(user_id):
-    if get_jwt_identity() != user_id:
-        return jsonify({"msg": "Unauthorized"}), 403
-
-    favorites = Favorites.query.filter_by(user_id=user_id).all()
+        favorites = Favorites.query.filter_by(user_id=user_id).all()
     return jsonify([favorite.serialize() for favorite in favorites])
 
 @app.route('/api/favorites/<int:id>', methods=['DELETE'])
