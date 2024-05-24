@@ -1,15 +1,18 @@
-from flask import Flask, request,jsonify
+from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from datetime import date, datetime
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from flask_cors import CORS
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # Load environment variables from .env file
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # Change to your database URI
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')  # Load from environment
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = 'super-secret'  # Change this in production
-
+app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')  # Load from environment
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
@@ -26,24 +29,23 @@ class User(db.Model):
     lat = db.Column(db.Float, nullable=True)
     favorites = db.relationship('Favorites', backref=db.backref('user', lazy=True))
     
-
     def __repr__(self):
         return f'<User {self.email}>'
 
     def set_password(self, password):
-        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+        self.hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def check_password(self, password):
-        return bcrypt.check_password_hash(self.password, password)
+        return bcrypt.check_password_hash(self.hashed_password, password)
 
     def serialize(self):
         return {
             "id": self.id,
             "email": self.email,
-            "dob": self.dob.isoformat(),
+            "dob": self.dob.isoformat() if self.dob else None,
             "location": self.location,
-            "lng": self.longitude,
-            "lat": self.latitude,
+            "lng": self.lng,
+            "lat": self.lat,
             # Do not serialize the password, it's a security breach
         }
     
@@ -61,9 +63,8 @@ class Favorites(db.Model):
     location = db.Column(db.String(255), nullable=False)
     imageURL = db.Column(db.String(255), nullable=True)
     
-
     def __repr__(self):
-        return f'<Favorites user_id={self.user_id} event_id={self.event_id}>'
+        return f'<Favorites user_id={self.user_id} id={self.id}>'
 
     def serialize(self):
         return {
@@ -76,7 +77,6 @@ class Favorites(db.Model):
             "location": self.location,
             "imageURL": self.imageURL 
         }
-    
 
 # Ensure that you create the tables
 with app.app_context():
