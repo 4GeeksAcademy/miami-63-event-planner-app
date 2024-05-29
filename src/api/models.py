@@ -6,6 +6,8 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required, ge
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
+import random
+import string
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -19,16 +21,20 @@ bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 CORS(app)
 
+def generate_id(length=6):
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for i in range(length))
+
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(6), primary_key=True, default=generate_id, unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    hashed_password = db.Column(db.String(80), unique=False, nullable=False)
+    hashed_password = db.Column(db.String(80), nullable=False)
     dob = db.Column(db.Date, nullable=True)
     location = db.Column(db.String, nullable=False)
-    lng = db.Column(db.Float, nullable=True)  
-    lat = db.Column(db.Float, nullable=True)
-    favorites = db.relationship('Favorites', backref=db.backref('user', lazy=True))
-    
+    lng = db.Column(db.Float, nullable=False)
+    lat = db.Column(db.Float, nullable=False)
+    favorites = db.relationship('Favorites', backref='user', lazy=True)
+
     def __repr__(self):
         return f'<User {self.email}>'
 
@@ -46,23 +52,22 @@ class User(db.Model):
             "location": self.location,
             "lng": self.lng,
             "lat": self.lat,
-            # Do not serialize the password, it's a security breach
         }
-    
+
     @classmethod
     def find_by_email(cls, email):
         return cls.query.filter_by(email=email).first()
-    
+
 class Favorites(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    id = db.Column(db.String(6), primary_key=True, default=generate_id, unique=True, nullable=False)
+    user_id = db.Column(db.String(6), db.ForeignKey('user.id'), nullable=False)
     title = db.Column(db.String(100), nullable=False)
     startTime = db.Column(db.DateTime, nullable=False)
     endTime = db.Column(db.DateTime, nullable=True)
     description = db.Column(db.String(255), nullable=True)
     location = db.Column(db.String(255), nullable=False)
     imageURL = db.Column(db.String(255), nullable=True)
-    
+
     def __repr__(self):
         return f'<Favorites user_id={self.user_id} id={self.id}>'
 
@@ -75,7 +80,7 @@ class Favorites(db.Model):
             "endTime": self.endTime.isoformat() if self.endTime else None,
             "description": self.description,
             "location": self.location,
-            "imageURL": self.imageURL 
+            "imageURL": self.imageURL,
         }
 
 # Ensure that you create the tables
