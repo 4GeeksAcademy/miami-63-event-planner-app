@@ -1,0 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Montserrat", sans-serif;
+}
+
+header{
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 100px;
+    padding-bottom: 100px;
+    
+}
+
+img {
+    height: 3.5vw;
+    width: auto;
+    
+}
+
+body{
+    background-color: #b0bbfa;
+    background-image: linear-gradient(19deg, #b0bbfa 8%, #f2a3f5 37%, #f7d576 89%);
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+}
+
+:root {
+  --primary: #eeeeee;
+  --secondary: #227c70;
+  --green: #82cd47;
+  --secondary-light: rgb(34, 124, 112, 0.2);
+  --secondary-light-2: rgb(127, 183, 126, 0.1);
+  --white: #fff;
+  --black: #393e46;
+
+  --shadow: 0px 2px 8px 0px var(--secondary-light);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+}
+
+body {
+  height: 100vh;
+  width: 100%;
+  background-color: var(--primary);
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  height: 70px;
+  padding: 0 8%;
+  box-shadow: var(--shadow);
+}
+
+img {
+  height: 3vw;
+  width: auto;
+  
+}
+
+.navbar-list {
+  width: 100%;
+  text-align: right;
+  padding-right: 2rem;
+  
+}
+
+.navbar-list li {
+  display: inline-block;
+  margin: 0 1rem;
+}
+
+.navbar-list li a {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #fff;
+  text-decoration: none;
+}
+
+.profile-dropdown {
+  position: relative;
+  width: fit-content;
+  
+}
+
+.profile-dropdown-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  width: 150px;
+  border-radius: 50px;
+  color: #fff;
+  background-color: white;
+  box-shadow: var(--shadow); 
+  cursor: pointer;
+  border: 1px solid #fff;
+  transition: box-shadow 0.2s ease-in, background-color 0.2s ease-in,
+    border 0.3s;
+}
+
+.profile-dropdown-btn:hover {
+  background-color: rgb(245, 245, 245);
+  box-shadow: var(--shadow);
+}
+
+.profile-img {
+  position: relative;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background-size: cover;
+}
+
+.profile-img i {
+  position: absolute;
+  right: 0;
+  bottom: 0.3rem;
+  font-size: 0.5rem;
+  color: var(--green);
+}
+
+.profile-dropdown-btn span {
+  margin: 0 0.5rem;
+  margin-right: 0;
+  color: #000000;
+  font-weight: 300;
+ 
+}
+
+.profile-dropdown-list {
+  position: absolute;
+  top: 68px;
+  width: 220px;
+  right: 0;
+  border-radius: 10px;
+  background-color: #fff;
+  max-height: 0;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: max-height 0.5s;
+  border: 2px solid rgba(255, 255, 255, .5);
+  box-shadow: 0 0 30px rgba(0, 0, 0, .5); /* Corrected typo here */
+  border-radius: 6%;
+}
+
+.profile-dropdown-list hr {
+  border: 0.5px solid #fff;
+}
+
+.profile-dropdown-list.active {
+  max-height: 500px;
+}
+
+.profile-dropdown-list-item {
+  padding: 0.5rem 0rem 0.5rem 1rem;
+  transition: background-color 0.2s ease-in, padding-left 0.2s;
+}
+
+.profile-dropdown-list-item a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 300;
+  color: #000000;
+  
+}
+
+.profile-dropdown-list-item a i {
+  margin-right: 0.8rem;
+  font-size: 1.1rem;
+  width: 2.3rem;
+  height: 2.3rem;
+  color: black;
+  line-height: 2.3rem;
+  text-align: center;
+  margin-right: 1rem;
+  border-radius: 50%;
+  transition: margin-right 0.3s;
+  padding-right: 30px;
+}
+
+.profile-dropdown-list-item:hover {
+  padding-left: 1.5rem;
+  background-color: #edeaead1;
+}
+
+  

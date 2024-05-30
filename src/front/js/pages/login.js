@@ -1,41 +1,49 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
-
 import { Context } from "../store/appContext";
+import PinITLogo from "../../img/PinIT-logo low-res.png;"
+import "../../styles/login.css";
 
-export const Demo = () => {
+export const Login = () => {
 	const { store, actions } = useContext(Context);
 
 	return (
-		<div className="container">
-			<ul className="list-group">
-				{store.demo.map((item, index) => {
-					return (
-						<li
-							key={index}
-							className="list-group-item d-flex justify-content-between"
-							style={{ background: item.background }}>
-							<Link to={"/single/" + index}>
-								<span>Link to: {item.title}</span>
-							</Link>
-							{// Conditional render example
-							// Check to see if the background is orange, if so, display the message
-							item.background === "orange" ? (
-								<p style={{ color: item.initial }}>
-									Check store/flux.js scroll to the actions to see the code
-								</p>
-							) : null}
-							<button className="btn btn-success" onClick={() => actions.changeColor(index, "orange")}>
-								Change Color
-							</button>
-						</li>
-					);
-				})}
-			</ul>
-			<br />
-			<Link to="/">
-				<button className="btn btn-primary">Back home</button>
-			</Link>
-		</div>
+		<div>
+			<div className="login-container">
+				<header>
+					<img src="logo.png" />
+					<div className="main-text">
+						<h1>Discover unforgettable experiences near you</h1>
+						<p> Tailored just for you!</p>
+					</div>
+				</header>
+				<div className="wrapper">
+					<div className="form-box login">
+						<h2>Log in</h2>
+						<form action="#">
+							<div className="input-box">
+								<span className="icon"><i className="bi bi-envelope"></i></span>
+								<input type="email" required />
+								<label>Email</label>
+							</div>
+							<div className="input-box">
+								<span className="icon"><i className="bi bi-lock"></i></span>
+								<input type="password" required />
+								<label>Password</label>
+							</div>
+							<div className="remember-forgot">
+								<label>
+									<input type="checkbox" /> Remember me</label>
+								<a href="#">Forgot Password?</a>
+							</div>
+							<button type="submit" className="btn">Log in</button>
+							<div className="login-register">
+								<p>Don't have an account? <a href="/register.html" className="register-link">Register</a></p>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+   		</div>
+
 	);
 };

@@ -1,19 +1,55 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { Context } from "../store/appContext";
+import PinITLogo from "../../img/PinIT-logo low-res.png;"
+import "../../styles/favorites.css";
 
-export const Navbar = () => {
+export const Favorites = () => {
+	const { store, actions } = useContext(Context);
+
 	return (
-		<nav className="navbar navbar-light bg-light">
-			<div className="container">
-				<Link to="/">
-					<span className="navbar-brand mb-0 h1">React Boilerplate</span>
-				</Link>
-				<div className="ml-auto">
-					<Link to="/demo">
-						<button className="btn btn-primary">Check the Context in action</button>
-					</Link>
+	<nav class="navbar">
+		<img src={PinITLogo} class="navbar-logo" alt="logo" />
+		<ul class="navbar-list">
+		
+		</ul>
+
+		<div class="profile-dropdown">
+			<div onclick="toggle()" class="profile-dropdown-btn">
+				<div class="profile-img">
+					<i>  <ion-icon name="ellipse"></ion-icon></i>
 				</div>
+
+				<span
+					>Michel R.
+					<i class="fa-solid fa-angle-down"></i>
+				</span>
 			</div>
-		</nav>
+
+			<ul class="profile-dropdown-list">
+
+				<li class="profile-dropdown-list-item">
+					<a href="favorites.html">
+						<i><ion-icon name="heart-outline"></ion-icon> </i>
+						Favorites
+					</a>
+				</li>
+
+				<li class="profile-dropdown-list-item">
+					<a href="#">
+					<i><ion-icon name="settings-outline"></ion-icon></i>
+					Settings
+					</a>
+				</li>
+				<hr />
+
+				<li class="profile-dropdown-list-item">
+					<a href="#">
+						<i> <ion-icon name="log-out-outline"></ion-icon></i>
+					Sign out
+					</a>
+				</li>
+			</ul>
+		</div>
+    </nav>
 	);
 };
