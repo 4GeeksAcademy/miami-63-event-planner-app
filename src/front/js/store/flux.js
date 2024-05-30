@@ -1,54 +1,58 @@
-const getState = ({ getStore, getActions, setStore }) => {
-	return {
-		store: {
-			message: null,
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
-		},
-		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
-			},
+import React, { createContext, useReducer, useContext } from 'react';
 
-			getMessage: async () => {
-				try{
-					// fetching data from the backend
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
-					const data = await resp.json()
-					setStore({ message: data.message })
-					// don't forget to return something, that is how the async resolves
-					return data;
-				}catch(error){
-					console.log("Error loading message from backend", error)
-				}
-			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
 
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
-
-				//reset the global store
-				setStore({ demo: demo });
-			}
-		}
-	};
+const initialState = {
+    user: null,
+    favorites: [],
 };
 
-export default getState;
+
+const reducer = (state, action) => {
+    switch (action.type) {
+        case 'SET_USER':
+            return {
+                ...state,
+                user: action.payload
+            };
+        case 'LOGOUT_USER':
+            return {
+                ...state,
+                user: null
+            };
+        case 'ADD_FAVORITE':
+            return {
+                ...state,
+                favorites: [...state.favorites, action.payload]
+            };
+        case 'REMOVE_FAVORITE':
+            return {
+                ...state,
+                favorites: state.favorites.filter(fav => fav.id !== action.payload)
+            };
+        case 'SET_FAVORITES':
+            return {
+                ...state,
+                favorites: action.payload
+            };
+        default:
+            return state;
+    }
+};
+
+
+const FluxContext = createContext();
+
+
+export const useFlux = () => useContext(FluxContext);
+
+
+export const FluxProvider = ({ children }) => {
+    const [state, dispatch] = useReducer(reducer, initialState);
+
+    return (
+        <FluxContext.Provider value={{ state, dispatch }}>
+            {children}
+        </FluxContext.Provider>
+    );
+};
+
