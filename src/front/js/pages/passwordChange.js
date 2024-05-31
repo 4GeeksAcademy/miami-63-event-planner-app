@@ -1,16 +1,16 @@
-import React, { useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../store/appContext";
-import rigoImageUrl from "../../img/rigo-baby.jpg";
-import "../../styles/home.css";
+import PinITLogo from "../../img/PinIT-logo low-res.png;"
+import "../../styles/passwordChange.css";
 
-export const Home = () => {
+export const PasswordChange = () => {
 	const { store, actions } = useContext(Context);
 
 	return (
 		<div className="text-center mt-5">
-			<h1>Hello Rigo!!</h1>
+			<h1>Hello PinIT!!</h1>
 			<p>
-				<img src={rigoImageUrl} />
+				<img src={PinITLogo} />
 			</p>
 			<div className="alert alert-info">
 				{store.message || "Loading message from the backend (make sure your python backend is running)..."}
