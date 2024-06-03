@@ -15,10 +15,23 @@ from datetime import datetime, timedelta
 
 api = Blueprint('api', __name__)
 
-@api.route('/test', methods=['POST'])
-def test_post():
-    print("test_post endpoint reached")
-    return jsonify({"ok": True, "msg": "Test endpoint reached"}), 200
+@api.route('/generate-token', methods=['POST'])
+def generate_token():
+    data = request.get_json()
+    email = data.get('email')
+    print(f"Received email: {email}")
+
+    if not email:
+        return jsonify({"ok": False, "msg": "Missing email"}), 400
+
+    try:
+        access_token = create_access_token(identity=email)
+        print(f"Generated token: {access_token}")
+        return jsonify({"ok": True, "token": access_token}), 200
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"ok": False, "msg": "An error occurred"}), 500
 
 @api.route('/users', methods=['POST'])
 def create_user():
@@ -74,6 +87,7 @@ def get_events():
 
     ticketmaster_url = "https://app.ticketmaster.com/discovery/v2/events.json"
     params = {
+        'size' : '20',
         'apikey': os.getenv('TICKETMASTER_API'),
         'latlong': f"{lat},{lng}",
         'radius': 50,

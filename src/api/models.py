@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from datetime import date, datetime
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-from flask_cors import CORS
 from sqlalchemy import inspect
 from dotenv import load_dotenv
 import os
@@ -20,7 +19,6 @@ app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')  # Load from environment
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
-CORS(app)
 
 def generate_id(length=6):
     characters = string.ascii_letters + string.digits
@@ -88,7 +86,6 @@ class Favorites(db.Model):
 
 # Ensure that you create the tables
 with app.app_context():
-    db.drop_all()
     db.create_all()
     print("Tables created successfully")
     inspector = inspect(db.engine)
