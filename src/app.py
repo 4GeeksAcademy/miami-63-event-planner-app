@@ -59,6 +59,19 @@ def sitemap():
         return generate_sitemap(app)
     return send_from_directory(static_file_dir, 'index.html')
 
+
+@app.route('/routes', methods=['GET'])
+def list_routes():
+    import urllib
+    output = []
+    for rule in app.url_map.iter_rules():
+        methods = ','.join(rule.methods)
+        url = rule.rule
+        line = urllib.parse.unquote("{:50s} {:20s} {}".format(rule.endpoint, methods, url))
+        output.append(line)
+    
+    return jsonify(output), 200
+
 # Serve any other file
 @app.route('/<path:path>', methods=['GET'])
 def serve_any_other_file(path):

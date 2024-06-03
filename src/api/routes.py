@@ -5,19 +5,37 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 from flask import Blueprint, request, jsonify
 from api.models import db, User, Favorites
 from api.utils import APIException
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, decode_token
 from werkzeug.security import generate_password_hash, check_password_hash
+import sendgrid
+from sendgrid.helpers.mail import Mail
 import requests
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 api = Blueprint('api', __name__)
 
-# Allow CORS requests to this API
-CORS(api)
+@api.route('/generate-token', methods=['POST'])
+def generate_token():
+    data = request.get_json()
+    email = data.get('email')
+    print(f"Received email: {email}")
+
+    if not email:
+        return jsonify({"ok": False, "msg": "Missing email"}), 400
+
+    try:
+        access_token = create_access_token(identity=email)
+        print(f"Generated token: {access_token}")
+        return jsonify({"ok": True, "token": access_token}), 200
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"ok": False, "msg": "An error occurred"}), 500
 
 @api.route('/users', methods=['POST'])
 def create_user():
+    print("create_user endpoint reached")
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
@@ -48,7 +66,7 @@ def login():
     if not user or not check_password_hash(user.hashed_password, password):
         return jsonify({"ok": False, "msg": "Invalid email or password"}), 401
     
-    access_token = create_access_token(identity=user.id)
+    access_token = create_access_token(identity=user.id, expires_delta=timedelta(days=1))
     return jsonify({"ok": True, "msg": "User authenticated successfully", "payload": {
         "access_token": access_token,
         "email": user.email,
@@ -69,6 +87,7 @@ def get_events():
 
     ticketmaster_url = "https://app.ticketmaster.com/discovery/v2/events.json"
     params = {
+        'size' : '20',
         'apikey': os.getenv('TICKETMASTER_API'),
         'latlong': f"{lat},{lng}",
         'radius': 50,
@@ -170,3 +189,52 @@ def change_location():
     db.session.commit()
     
     return jsonify({"ok": True, "msg": "Location updated successfully"}), 200
+
+@api.route('/forgot-password', methods=['POST'])
+def forgot_password():
+    data = request.get_json()
+    email = data.get('email')
+    
+    if not email:
+        return jsonify({"ok": False, "msg": "Email is required"}), 400
+    
+    user = User.query.filter_by(email=email).first()
+    
+    if not user:
+        return jsonify({"ok": False, "msg": "User not found"}), 404
+    
+    reset_token = create_access_token(identity=email, expires_delta=timedelta(minutes=10))
+    reset_url = f"{request.host_url}passwordChange?token={reset_token}"
+    send_reset_email(user.email, reset_url)
+    
+    return jsonify({"ok": True, "msg": "Password reset email sent"}), 200
+
+def send_reset_email(to_email, reset_url):
+    sg = sendgrid.SendGridAPIClient(api_key=os.getenv('SENDGRID_API_KEY'))
+    from_email = os.getenv('FROM_EMAIL')
+    subject = "Password Reset Request"
+    content = f"Click the link to reset your password: {reset_url}"
+    message = Mail(from_email=from_email, to_emails=to_email, subject=subject, html_content=content)
+    sg.send(message)
+
+@api.route('/reset-password', methods=['POST'])
+@jwt_required()
+def reset_password():
+    data = request.get_json()
+    token = data.get('token')
+    new_password = data.get('new_password')
+    email = get_jwt_identity()
+    
+    if not new_password:
+        return jsonify({"ok": False, "msg": "New password required"}), 400
+    
+    user = User.query.filter_by(email=email).first()
+    
+    if not user:
+        return jsonify({"ok": False, "msg": "User not found"}), 404
+    
+    hashed_password = generate_password_hash(new_password)
+    user.hashed_password = hashed_password
+    db.session.commit()
+    
+    return jsonify({"ok": True, "msg": "Password has been reset"}), 200
