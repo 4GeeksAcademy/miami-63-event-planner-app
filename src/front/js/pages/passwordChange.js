@@ -7,20 +7,32 @@ export const PasswordChange = () => {
 	const { store, actions } = useContext(Context);
 
 	return (
-		<div className="text-center mt-5">
-			<h1>Hello PinIT!!</h1>
-			<p>
-				<img src={PinITLogo} />
-			</p>
-			<div className="alert alert-info">
-				{store.message || "Loading message from the backend (make sure your python backend is running)..."}
+		<body>
+		  <header>
+			<a href="/login.html">
+			  <img src="logo.png" alt="Logo" />
+			</a>
+		  </header>
+		  <div className="wrapper">
+			<div className="form-box login">
+			  <h2>Change Password</h2>
+			  <form action="#">
+				<div className="input-box">
+				  <span className="icon"><IonIcon name="mail-outline" /></span>
+				  <input type="password" required />
+				  <label>New Password</label>
+				</div>
+				<div className="input-box">
+				  <span className="icon"><IonIcon name="lock-closed-outline" /></span>
+				  <input type="password" required />
+				  <label>Confirm New Password</label>
+				</div>
+				<button type="submit" className="btn">Log in</button>
+			  </form>
 			</div>
-			<p>
-				This boilerplate comes with lots of documentation:{" "}
-				<a href="https://start.4geeksacademy.com/starters/react-flask">
-					Read documentation
-				</a>
-			</p>
-		</div>
-	);
-};
+		  </div>
+		</body>
+	  );
+	};
+	
+	export default ChangePassword;
