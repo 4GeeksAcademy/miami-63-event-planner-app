@@ -10,7 +10,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         actions: {
             newUser: async (email, password, location) => {
                 try {
-                    const resp = await fetch(process.env.BACKEND_URL + "/api/signup", {
+                    const resp = await fetch(process.env.BACKEND_URL + "/api/users", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ email, password, location }),
