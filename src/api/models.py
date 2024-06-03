@@ -1,9 +1,10 @@
-from flask import Flask, request, jsonify
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from datetime import date, datetime
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from flask_cors import CORS
+from sqlalchemy import inspect
 from dotenv import load_dotenv
 import os
 import random
@@ -26,6 +27,7 @@ def generate_id(length=6):
     return ''.join(random.choice(characters) for i in range(length))
 
 class User(db.Model):
+    __tablename__ = 'user'
     id = db.Column(db.String(6), primary_key=True, default=generate_id, unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     hashed_password = db.Column(db.String(80), nullable=False)
@@ -59,6 +61,7 @@ class User(db.Model):
         return cls.query.filter_by(email=email).first()
 
 class Favorites(db.Model):
+    __tablename__ = 'favorites'
     id = db.Column(db.String(6), primary_key=True, default=generate_id, unique=True, nullable=False)
     user_id = db.Column(db.String(6), db.ForeignKey('user.id'), nullable=False)
     title = db.Column(db.String(100), nullable=False)
@@ -85,7 +88,12 @@ class Favorites(db.Model):
 
 # Ensure that you create the tables
 with app.app_context():
+    db.drop_all()
     db.create_all()
+    print("Tables created successfully")
+    inspector = inspect(db.engine)
+    tables = inspector.get_table_names()
+    print("Existing tables:", tables)
 
 if __name__ == '__main__':
     app.run(debug=True)

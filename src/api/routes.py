@@ -15,11 +15,14 @@ from datetime import datetime, timedelta
 
 api = Blueprint('api', __name__)
 
-# Allow CORS requests to this API
-CORS(api)
+@api.route('/test', methods=['POST'])
+def test_post():
+    print("test_post endpoint reached")
+    return jsonify({"ok": True, "msg": "Test endpoint reached"}), 200
 
 @api.route('/users', methods=['POST'])
 def create_user():
+    print("create_user endpoint reached")
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
