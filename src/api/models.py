@@ -86,6 +86,7 @@ class Favorites(db.Model):
 
 # Ensure that you create the tables
 with app.app_context():
+    db.drop_all()
     db.create_all()
     print("Tables created successfully")
     inspector = inspect(db.engine)
