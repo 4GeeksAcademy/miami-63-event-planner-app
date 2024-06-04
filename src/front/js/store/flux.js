@@ -57,7 +57,13 @@ const getState = ({ getStore, getActions, setStore }) => {
                         data = store.events;
                         if (data.length === 0) {  // Correct typo in length
                             try {
-                                const resp = await fetch(process.env.BACKEND_URL + "/api/events");
+                                const resp = await fetch(process.env.BACKEND_URL + "/api/events", {
+                                    method: "GET",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        Authorization: `Bearer ${store.token}`
+                                    }
+                                });
                                 data = await resp.json();
                                 setStore({ events: data });
                             } catch (error) {
@@ -85,7 +91,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                         }
                         return data;
 
-                    case "add-favorite":
+                    case "add":
                         try {
                             const resp = await fetch(process.env.BACKEND_URL + "/api/favorites", {
                                 method: "POST",
@@ -105,7 +111,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                         }
                         break;
 
-                    case "delete-favorite":
+                    case "delete":
                         try {
                             const resp = await fetch(`${process.env.BACKEND_URL}/api/favorites/${id}`, {
                                 method: "DELETE",
