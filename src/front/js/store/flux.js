@@ -6,6 +6,9 @@ const getState = ({ getStore, getActions, setStore }) => {
             events: [],
             favorites: [],
             currentIndex: 0,
+            location: null,
+            user_id: null,
+
         },
         actions: {
             newUser: async (email, password, location) => {
@@ -31,9 +34,11 @@ const getState = ({ getStore, getActions, setStore }) => {
                     });
                     const data = await resp.json();
                     if (resp.ok) {
-                        localStorage.setItem("token", data.token);
-                        localStorage.setItem("email", email);
-                        setStore({ token: data.token, email });
+                        localStorage.setItem("token", data.access_token);
+                        localStorage.setItem("email", data.email);
+                        localStorage.setItem("userID", data.user_id);
+                        localStorage.setItem("location", data.location);
+                        setStore({ token: data.access_token, email: data.email, userID: data.user_id, location: data.location });
                     }
                     return { ok: resp.ok, msg: data.msg };
                 } catch (error){
