@@ -9,7 +9,7 @@ const ForgotPassword = () => {
 
     const handleSubmit = (e) => {
 		e.preventDefault();
-		actions.login(email, password);
+		actions.forgotPassword(email);
 	};
 
     
@@ -23,7 +23,7 @@ const ForgotPassword = () => {
             <div className="wrapper">
                 <div className="form-box login">
                     <h2>Forgot password?</h2>
-                    <h3>Enter your email and we will send you a link to get back into your account.</h3>
+                    <h3>Enter your email and we will send you a link to reset your password.</h3>
                     <form onSubmit={handleSubmit}>
                         <div className="input-box">
                             <span className="icon"><i className="bi bi-envelope"></i></span>

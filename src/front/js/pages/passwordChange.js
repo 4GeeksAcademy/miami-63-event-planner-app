@@ -8,12 +8,11 @@ export const PasswordChange = () => {
 	const { store, actions } = useContext(Context);
 
 	
-	const [newpassword, setNewPassword] = useState("");
+	const [newPassword, setNewPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
-	const [password, setPassword] = useState("");
 	const [token, setToken] = useState("");
 	const location = useLocation();
-
+};
 	useEffect(() => {
 		const params = new URLSearchParams(location.search);
 		const tokenParam = params.get("token");
@@ -23,53 +22,57 @@ export const PasswordChange = () => {
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		if (newPassword === confirmPassword) {
-		  actions.changePassword(newPassword);
+		  actions.changePassword(newPassword, token);
 		} else {
 		  alert("Passwords do not match");
 		}
 	  };
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		const response = await fetch("https://your-backend-endpoint.com/submit", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ token, password }),
-		});
+	// async function handleSubmit(e) {
+	// 	e.preventDefault();
+	// 	const response = await fetch("https://your-backend-endpoint.com/submit", {
+	// 		method: "POST",
+	// 		headers: {
+	// 			"Content-Type": "application/json",
+	// 		},
+	// 		body: JSON.stringify({ token, password }),
+	// 	});
 
-		if (response.ok) {
-			console.log("Password reset successfully");
-		} else {
-			console.error("Error reseting password");
-		}
-	};
+	// 	if (response.ok) {
+	// 		console.log("Password reset successfully");
+	// 	} else {
+	// 		console.error("Error reseting password");
+	// 	}
+	// }
 
 
-	return (
-		<body> className="text-center mt-5"
-			<h1>Hello PinIT!!</h1>
-		  <Link to="/login">
-          <img src={PinITLogo} alt="Logo" />
-        </Link>
-			<div className="alert alert-info">
-				{store.message || "Loading message from the backend (make sure your python backend is running)..."}
+	const ChangePassword = () => {
+		return (
+		  <body>
+			<header>
+			  <a href="/login.html">
+				<img src="logo.png" alt="Logo" />
+			  </a>
+			</header>
+			<div className="wrapper">
+			  <div className="form-box login">
+				<h2>Change Password</h2>
+				<form onSubmit={handleSubmit}>
+				  <div className="input-box">
+					<span className="icon"><IonIcon name="mail-outline" /></span>
+					<input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+					<label>New Password</label>
+				  </div>
+				  <div className="input-box">
+					<span className="icon"><IonIcon name="lock-closed-outline" /></span>
+					<input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+					<label>Confirm New Password </label>
+				  </div>
+				  <button type="submit" className="btn">Change Password</button>
+				</form>
+			  </div>
 			</div>
-			<p>
-			  <form onSubmit={handleSubmit}>omes with lots of documentation:{" "}
-				 <div className="input-box">
-              <span className="icon"><i className="bi bi-lock"></i></span>
-              <input type="password" required value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-              <label>New Password</label>
-            </div>	
-			<div className="input-box">
-              <span className="icon"><i className="bi bi-lock-fill"></i></span>
-              <input type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
-              </div>
-			<ew label>
-            </div>          
-			<button type="submit" className="btn">Change Password</button>
-          </form>
-
-)};
+		  </body>
+		);
+	  };
+	

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../store/appContext";
 import PinITLogo from "../../img/PinIT-logo low-res.png;"
-import "../../styles/favorites.css";
+import "../../styles/navbar.css";
 
 export const Favorites = () => {
 	const { store, actions } = useContext(Context);

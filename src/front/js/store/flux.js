@@ -3,11 +3,11 @@ const getState = ({ getStore, getActions, setStore }) => {
         store: {
             token: null,
             email: null,
+            location: null,
+            user_id: null,
             events: [],
             favorites: [],
             currentIndex: 0,
-            location: null,
-            user_id: null,
 
         },
         actions: {
@@ -30,15 +30,19 @@ const getState = ({ getStore, getActions, setStore }) => {
                     const resp = await fetch(process.env.BACKEND_URL + "/api/login", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({email,password}),
+                        body: JSON.stringify({email, password}),
                     });
                     const data = await resp.json();
                     if (resp.ok) {
+                        const store = getStore();
                         localStorage.setItem("token", data.access_token);
                         localStorage.setItem("email", data.email);
                         localStorage.setItem("userID", data.user_id);
                         localStorage.setItem("location", data.location);
-                        setStore({ token: data.access_token, email: data.email, userID: data.user_id, location: data.location });
+                        store.token = data.access_token;
+                        store.email = data.email;
+                        store.user_id = data.user_id;
+                        store.location = data.location
                     }
                     return { ok: resp.ok, msg: data.msg };
                 } catch (error){
@@ -58,13 +62,11 @@ const getState = ({ getStore, getActions, setStore }) => {
                     case "events":
                         if (store.events.length !== 0) {
 							console.log("Events fetched from store");
-							break
 						} else if (localStorage.getItem(events)) {
-							events = JSON.parse(localStorage.getItem(events))
+							events = JSON.parse(localStorage.getItem("events"))
 							console.log("Events fetched from local storage")
-							break
 						} else {
-							console.log("Starting fetched from local storage")
+							console.log("Starting API call for events")
                             try {
                                 const resp = await fetch(process.env.BACKEND_URL + "/api/events", {
                                     method: "GET",
@@ -74,12 +76,17 @@ const getState = ({ getStore, getActions, setStore }) => {
                                     }
                                 });
                                 data = await resp.json();
-                                setStore({ events: data.payload });
+                                if (data.ok){
+                                events = data.payload;
+                                console.log("Events fetched from API")
+                                } else {
+                                    console.log(`While fetching events from API: ok: ${data.ok}, msg: ${data.msg}`)
+                                }
                             } catch (error) {
                                 console.log("Error fetching events", error);
                             }
-                        return data;
 						}
+                        
 
                     case "favorites":
                         data = store.favorites;
