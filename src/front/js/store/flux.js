@@ -1,54 +1,162 @@
 const getState = ({ getStore, getActions, setStore }) => {
-	return {
-		store: {
-			message: null,
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
-		},
-		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
-			},
+    return {
+        store: {
+            token: null,
+            email: null,
+            events: [],
+            favorites: [],
+            currentIndex: 0,
+            location: null,
+            user_id: null,
 
-			getMessage: async () => {
-				try{
-					// fetching data from the backend
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
-					const data = await resp.json()
-					setStore({ message: data.message })
-					// don't forget to return something, that is how the async resolves
-					return data;
-				}catch(error){
-					console.log("Error loading message from backend", error)
-				}
-			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
+        },
+        actions: {
+            newUser: async (email, password, location) => {
+                try {
+                    const resp = await fetch(process.env.BACKEND_URL + "/api/users", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email, password, location }),
+                    });
+                    const data = await resp.json();
+                    return { ok: resp.ok, msg: data.msg };
+                } catch (error) {
+                    console.log("Error creating new user", error);
+                    return { ok: false, msg: "Error creating new user" };
+                }
+            },
+            login: async(email, password) => {
+                try {
+                    const resp = await fetch(process.env.BACKEND_URL + "/api/login", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({email,password}),
+                    });
+                    const data = await resp.json();
+                    if (resp.ok) {
+                        localStorage.setItem("token", data.access_token);
+                        localStorage.setItem("email", data.email);
+                        localStorage.setItem("userID", data.user_id);
+                        localStorage.setItem("location", data.location);
+                        setStore({ token: data.access_token, email: data.email, userID: data.user_id, location: data.location });
+                    }
+                    return { ok: resp.ok, msg: data.msg };
+                } catch (error){
+                    console.log("Error logging in", error);
+                    return {ok: false, msg: "Error logging in"};
+                }
+            },
 
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
+            data: async (action, id, payload) => {
+                const store = getStore();
+                const actions = getActions();  // Correct variable name to avoid conflict
+                let data;
 
-				//reset the global store
-				setStore({ demo: demo });
-			}
-		}
-	};
+                switch (action) {
+                    case "events":
+                        data = store.events;
+                        if (data.length === 0) {  // Correct typo in length
+                            try {
+                                const resp = await fetch(process.env.BACKEND_URL + "/api/events", {
+                                    method: "GET",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        Authorization: `Bearer ${store.token}`
+                                    }
+                                });
+                                data = await resp.json();
+                                setStore({ events: data });
+                            } catch (error) {
+                                console.log("Error fetching events", error);
+                            }
+                        }
+                        return data;
+
+                    case "favorites":
+                        data = store.favorites;
+                        if (data.length === 0) {
+                            try {
+                                const resp = await fetch(process.env.BACKEND_URL + "/api/favorites", {
+                                    method: "GET",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                        Authorization: `Bearer ${store.token}`
+                                    }
+                                });
+                                data = await resp.json();
+                                setStore({ favorites: data });
+                            } catch (error) {
+                                console.log("Error fetching favorites", error);
+                            }
+                        }
+                        return data;
+
+                    case "add":
+                        try {
+                            const resp = await fetch(process.env.BACKEND_URL + "/api/favorites", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    Authorization: `Bearer ${store.token}`
+                                },
+                                body: JSON.stringify(payload)
+                            });
+                            data = await resp.json();
+                            if (resp.ok) {
+                                setStore({ favorites: [...store.favorites, data] });
+                            }
+                            return data;
+                        } catch (error) {
+                            console.log("Error adding favorite", error);
+                        }
+                        break;
+
+                    case "delete":
+                        try {
+                            const resp = await fetch(`${process.env.BACKEND_URL}/api/favorites/${id}`, {
+                                method: "DELETE",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    Authorization: `Bearer ${store.token}`
+                                }
+                            });
+                            data = await resp.json();
+                            if (resp.ok) {
+                                setStore({ favorites: store.favorites.filter(fav => fav.id !== id) });
+                            }
+                            return data;
+                        } catch (error) {
+                            console.log("Error deleting favorite", error);
+                        }
+                        break;
+
+                    default:
+                        console.log("Unknown action type");
+                }
+            },
+
+            swipeEvent: (direction, event) => {
+                const actions = getActions();
+                if (direction === "right") {
+                    actions.data("add", event.id, event);
+                } else if (direction === "left") {
+                    const store = getStore();
+                    const newIndex = store.currentIndex - 1;
+                    setStore({ currentIndex: Math.max(newIndex, 0) });
+                }
+            },
+
+            fetchEvents: async () => {
+                const actions = getActions();
+                return await actions.data("events");
+            },
+
+            resetSwipe: () => {
+                const store = getStore();
+                setStore({ currentIndex: store.currentIndex + 1 });
+            },
+        }
+    };
 };
 
 export default getState;
