@@ -138,7 +138,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             swipeEvent: (direction, event) => {
                 const actions = getActions();
                 if (direction === "right") {
-                    actions.data("add-favorite", event.id, event);
+                    actions.data("add", event.id, event);
                 } else if (direction === "left") {
                     const store = getStore();
                     const newIndex = store.currentIndex - 1;
