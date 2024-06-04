@@ -49,13 +49,22 @@ const getState = ({ getStore, getActions, setStore }) => {
 
             data: async (action, id, payload) => {
                 const store = getStore();
-                const actions = getActions();  // Correct variable name to avoid conflict
+                const actions = getActions();
                 let data;
+				let events = store.events;
+				let favorites = store.favorites;
 
                 switch (action) {
                     case "events":
-                        data = store.events;
-                        if (data.length === 0) {  // Correct typo in length
+                        if (store.events.length !== 0) {
+							console.log("Events fetched from store");
+							break
+						} else if (localStorage.getItem(events)) {
+							events = JSON.parse(localStorage.getItem(events))
+							console.log("Events fetched from local storage")
+							break
+						} else {
+							console.log("Starting fetched from local storage")
                             try {
                                 const resp = await fetch(process.env.BACKEND_URL + "/api/events", {
                                     method: "GET",
@@ -65,12 +74,12 @@ const getState = ({ getStore, getActions, setStore }) => {
                                     }
                                 });
                                 data = await resp.json();
-                                setStore({ events: data });
+                                setStore({ events: data.payload });
                             } catch (error) {
                                 console.log("Error fetching events", error);
                             }
-                        }
                         return data;
+						}
 
                     case "favorites":
                         data = store.favorites;
@@ -133,6 +142,8 @@ const getState = ({ getStore, getActions, setStore }) => {
                     default:
                         console.log("Unknown action type");
                 }
+				store.events = events;
+				store.favorites = favorites;
             },
 
             swipeEvent: (direction, event) => {

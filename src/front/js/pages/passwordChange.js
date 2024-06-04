@@ -1,38 +1,43 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../store/appContext";
-import PinITLogo from "../../img/PinIT-logo low-res.png;"
+import PinITLogo from "../../img/PinIT-logo low-res.png";
 import "../../styles/passwordChange.css";
 
 export const PasswordChange = () => {
 	const { store, actions } = useContext(Context);
+	const [newpassword, setNewPassword] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState("");
+
+
+	const handleSubmit = (e) => {
+    e.preventDefault();
+    if (newPassword === confirmPassword) {
+      actions.changePassword(newPassword);
+    } else {
+      alert("Passwords do not match");
+    }
+  };
+
 
 	return (
-		<body>
-		  <header>
-			<a href="/login.html">
-			  <img src="logo.png" alt="Logo" />
-			</a>
-		  </header>
-		  <div className="wrapper">
-			<div className="form-box login">
-			  <h2>Change Password</h2>
-			  <form action="#">
-				<div className="input-box">
-				  <span className="icon"><IonIcon name="mail-outline" /></span>
-				  <input type="password" required />
-				  <label>New Password</label>
-				</div>
-				<div className="input-box">
-				  <span className="icon"><IonIcon name="lock-closed-outline" /></span>
-				  <input type="password" required />
-				  <label>Confirm New Password</label>
-				</div>
-				<button type="submit" className="btn">Log in</button>
-			  </form>
+		<body> className="text-center mt-5"
+			<h1>Hello PinIT!!</h1>
+		  <Link to="/login">
+          <img src={PinITLogo} alt="Logo" />
+        </Link>
+			<div className="alert alert-info">
+				{store.message || "Loading message from the backend (make sure your python backend is running)..."}
 			</div>
-		  </div>
-		</body>
-	  );
-	};
-	
-	export default ChangePassword;
+			<p>
+			  <form onSubmit={handleSubmit}>omes with lots of documentation:{" "}
+				 <div className="input-box">
+              <span className="icon"><i className="bi bi-lock"></i></span>
+              <input type="password" required value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+              <label>New Password</label>
+            </div>	<	div className="input-box">
+              <span className="icon"><i className="bi bi-lock-fill"></i></span>
+              <input type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+              <label>Confirm New Password</label>
+            </div>
+            <button type="submit" className="btn">Change Password</button>
+          </form>	</body>
