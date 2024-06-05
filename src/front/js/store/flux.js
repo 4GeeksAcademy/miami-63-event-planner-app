@@ -3,11 +3,11 @@ const getState = ({ getStore, getActions, setStore }) => {
         store: {
             token: null,
             email: null,
+            location: null,
+            user_id: null,
             events: [],
             favorites: [],
             currentIndex: 0,
-            location: null,
-            user_id: null,
 
         },
         actions: {
@@ -21,41 +21,52 @@ const getState = ({ getStore, getActions, setStore }) => {
                     const data = await resp.json();
                     return { ok: resp.ok, msg: data.msg };
                 } catch (error) {
-                    console.log("Error creating new user", error);
+                    console.log("From actions.newUser: Error creating new user", error);
                     return { ok: false, msg: "Error creating new user" };
                 }
-            },
+            },  // closing newUser method
+
             login: async(email, password) => {
                 try {
                     const resp = await fetch(process.env.BACKEND_URL + "/api/login", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({email,password}),
+                        body: JSON.stringify({email, password}),
                     });
                     const data = await resp.json();
                     if (resp.ok) {
+                        const store = getStore();
                         localStorage.setItem("token", data.access_token);
                         localStorage.setItem("email", data.email);
                         localStorage.setItem("userID", data.user_id);
                         localStorage.setItem("location", data.location);
-                        setStore({ token: data.access_token, email: data.email, userID: data.user_id, location: data.location });
+                        store.token = data.access_token;
+                        store.email = data.email;
+                        store.user_id = data.user_id;
+                        store.location = data.location
                     }
-                    return { ok: resp.ok, msg: data.msg };
+                    console.log(`From actions.login: ok: ${resp.ok}, msg: ${resp.msg}`);
+                    return { ok: resp.ok, msg: resp.msg };
                 } catch (error){
-                    console.log("Error logging in", error);
+                    console.log("From actions.login: Error logging in", error);
                     return {ok: false, msg: "Error logging in"};
                 }
-            },
+            }, // closing login method
 
-            data: async (action, id, payload) => {
+            data: async (action, payload) => {
                 const store = getStore();
-                const actions = getActions();  // Correct variable name to avoid conflict
-                let data;
-
+                let data = [];
+            
                 switch (action) {
                     case "events":
-                        data = store.events;
-                        if (data.length === 0) {  // Correct typo in length
+                        if (store.events.length !== 0) {
+                            data = store.events;
+                            console.log("From actions.data: Events fetched from store");
+                        } else if (localStorage.getItem("events")) {
+                            data = JSON.parse(localStorage.getItem("events"));
+                            console.log("From actions.data: Events fetched from local storage");
+                        } else {
+                            console.log("From actions.data: Starting API call for events");
                             try {
                                 const resp = await fetch(process.env.BACKEND_URL + "/api/events", {
                                     method: "GET",
@@ -64,17 +75,30 @@ const getState = ({ getStore, getActions, setStore }) => {
                                         Authorization: `Bearer ${store.token}`
                                     }
                                 });
-                                data = await resp.json();
-                                setStore({ events: data });
+                                const events = await resp.json();
+                                if (events.ok) {
+                                    data = events.payload;
+                                    console.log("From actions.data: Events fetched from API");
+                                    store.events = data;
+                                    localStorage.setItem("events", JSON.stringify(data));
+                                } else {
+                                    console.log(`From actions.data: While fetching events from API: ok: ${events.ok}, msg: ${events.msg}`);
+                                }
                             } catch (error) {
-                                console.log("Error fetching events", error);
+                                console.log("From actions.data: Error fetching events", error);
                             }
                         }
                         return data;
-
+            
                     case "favorites":
-                        data = store.favorites;
-                        if (data.length === 0) {
+                        if (store.favorites.length !== 0) {
+                            data = store.favorites;
+                            console.log("From actions.data: Favorites fetched from store");
+                        } else if (localStorage.getItem("favorites")) {
+                            data = JSON.parse(localStorage.getItem("favorites"));
+                            console.log("From actions.data: Favorites fetched from local storage");
+                        } else {
+                            console.log("From actions.data: Starting API call for favorites");
                             try {
                                 const resp = await fetch(process.env.BACKEND_URL + "/api/favorites", {
                                     method: "GET",
@@ -83,14 +107,21 @@ const getState = ({ getStore, getActions, setStore }) => {
                                         Authorization: `Bearer ${store.token}`
                                     }
                                 });
-                                data = await resp.json();
-                                setStore({ favorites: data });
+                                const favorites = await resp.json();
+                                if (favorites.ok) {
+                                    data = favorites.payload;
+                                    console.log("From actions.data: Favorites fetched from API");
+                                    store.favorites = data;
+                                    localStorage.setItem("favorites", JSON.stringify(data));
+                                } else {
+                                    console.log(`From actions.data: While fetching favorites from API: ok: ${favorites.ok}, msg: ${favorites.msg}`);
+                                }
                             } catch (error) {
-                                console.log("Error fetching favorites", error);
+                                console.log("From actions.data: Error fetching favorites", error);
                             }
                         }
                         return data;
-
+            
                     case "add":
                         try {
                             const resp = await fetch(process.env.BACKEND_URL + "/api/favorites", {
@@ -101,39 +132,48 @@ const getState = ({ getStore, getActions, setStore }) => {
                                 },
                                 body: JSON.stringify(payload)
                             });
-                            data = await resp.json();
-                            if (resp.ok) {
-                                setStore({ favorites: [...store.favorites, data] });
+                            const favorites = await resp.json();
+                            if (favorites.ok) {
+                                data = favorites.payload;
+                                console.log("From actions.data: Favorite added and fetched from API");
+                                store.favorites = data;
+                                localStorage.setItem("favorites", JSON.stringify(data));
+                            } else {
+                                console.log(`From actions.data: There was an issue adding favorite: ok: ${favorites.ok}, msg:${favorites.msg}`);
                             }
-                            return data;
                         } catch (error) {
-                            console.log("Error adding favorite", error);
+                            console.log("From actions.data: Error adding favorite", error);
                         }
-                        break;
-
+                        return data;
+            
                     case "delete":
                         try {
-                            const resp = await fetch(`${process.env.BACKEND_URL}/api/favorites/${id}`, {
+                            const resp = await fetch(`${process.env.BACKEND_URL}/api/favorites/${payload.id}`, {
                                 method: "DELETE",
                                 headers: {
                                     "Content-Type": "application/json",
                                     Authorization: `Bearer ${store.token}`
                                 }
                             });
-                            data = await resp.json();
-                            if (resp.ok) {
-                                setStore({ favorites: store.favorites.filter(fav => fav.id !== id) });
+                            const favorites = await resp.json();
+                            if (favorites.ok) {
+                                data = favorites.payload;
+                                console.log("From actions.data: Favorite deleted and fetched from API");
+                                store.favorites = data;
+                                localStorage.setItem("favorites", JSON.stringify(data));
+                            } else {
+                                console.log(`From actions.data: There was an issue deleting favorite: ok: ${favorites.ok}, msg:${favorites.msg}`);
                             }
-                            return data;
                         } catch (error) {
-                            console.log("Error deleting favorite", error);
+                            console.log("From actions.data: Error deleting favorite", error);
                         }
-                        break;
-
+                        return data;
+            
                     default:
-                        console.log("Unknown action type");
+                        console.log("From actions.data: Unknown action type");
+                        return data;
                 }
-            },
+            },  // closing data method
 
             swipeEvent: (direction, event) => {
                 const actions = getActions();
@@ -144,17 +184,17 @@ const getState = ({ getStore, getActions, setStore }) => {
                     const newIndex = store.currentIndex - 1;
                     setStore({ currentIndex: Math.max(newIndex, 0) });
                 }
-            },
+            },  // closing swipeEvent method
 
             fetchEvents: async () => {
                 const actions = getActions();
                 return await actions.data("events");
-            },
+            }, // closing fetchEvents method
 
             resetSwipe: () => {
                 const store = getStore();
                 setStore({ currentIndex: store.currentIndex + 1 });
-            },
+            }, // closing resetSwipe method
         }
     };
 };
