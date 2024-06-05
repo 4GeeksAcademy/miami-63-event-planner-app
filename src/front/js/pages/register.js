@@ -3,11 +3,13 @@ import { Context } from "../store/appContext";
 import PinITLogo from "../../img/PinIT-logo low-res.png";
 import AutoCompleteComponent from "../component/AutoCompleteComponent";
 import "../../styles/register.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Register = () => {
 
 	const { store, actions } = useContext(Context);
+	const navigate = useNavigate();
+	const [problem, setProblem] = useState(null);
 	const [location, setLocation] = useState({
 		formatted_address: '',
 		lat: null,
@@ -16,10 +18,17 @@ export const Register = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
-
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		actions.newUser(email, password, location);
+		const result = await actions.newUser(email, password, location);
+		if (result.ok) {
+			console.log('From register.js: user created successfully');
+			setProblem(null);
+			navigate('/login');
+		} else {
+			console.log(`From register.js: Error: ${result.msg}`);
+			setProblem(`Error: ${result.msg}`);
+		}
 	};
 
 	return (
@@ -49,6 +58,7 @@ export const Register = () => {
 					</div>
 				</form>
 			</div>
+			{problem && <p className="problem">{problem}</p>}
 		</div>
 	);
 };

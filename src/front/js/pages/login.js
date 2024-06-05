@@ -2,17 +2,27 @@ import React, { useState, useContext } from "react";
 import { Context } from "../store/appContext";
 import PinITLogo from "../../img/PinIT-logo low-res.png";
 import "../../styles/login.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Login = () => {
 	const { store, actions } = useContext(Context);
 
+	const navigate = useNavigate();
+	const [problem, setProblem] = useState(null);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		actions.login(email, password);
+		const result = await actions.login(email, password);
+		if (result.ok) {
+			console.log('From register.js: login successful');
+			setProblem(null);
+			navigate('/homePage');
+		} else {
+			console.log(`From register.js: Error: ${result.msg}`);
+			setProblem(`Error: ${result.msg}`);
+		}
 	};
 
 	return (
@@ -47,6 +57,7 @@ export const Login = () => {
 						</form>
 					</div>
 				</div>
+				{problem && <p className="problem">{problem}</p>}
 			</div>
 		</div>
 	);

@@ -1,6 +1,6 @@
 // src/Card.js
 import React, { useState } from 'react';
-import './Card.css';
+import '../../styles/card.css';
 
 const Card = ({ content }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
