@@ -16,11 +16,11 @@ export const Login = () => {
 		e.preventDefault();
 		const result = await actions.login(email, password);
 		if (result.ok) {
-			console.log('From register.js: login successful');
+			console.log('From login.js: login successful');
 			setProblem(null);
 			navigate('/homePage');
 		} else {
-			console.log(`From register.js: Error: ${result.msg}`);
+			console.log(`From login.js: Error: ${result.msg}`);
 			setProblem(`Error: ${result.msg}`);
 		}
 	};
@@ -53,6 +53,10 @@ export const Login = () => {
 							<div className="login-register" style={{ display: "flex" }}>
 								<p>Don't have an account?</p>
 								<Link to="/register" className="register-link">Register</Link>
+							</div>
+							<div className="login-register" style={{ display: "flex" }}>
+								<p>Forgot password?</p>
+								<Link to="/forgotPassword" className="register-link">Reset Password</Link>
 							</div>
 						</form>
 					</div>

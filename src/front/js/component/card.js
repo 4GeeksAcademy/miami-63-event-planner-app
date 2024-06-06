@@ -35,6 +35,8 @@ const Card = ({ content }) => {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
     >
+      <h1>{event.title}</h1>
+      <p>{event.description}</p>
       {content}
     </div>
   );

@@ -46,8 +46,8 @@ def create_user():
     if not email or not password or not location or lat is None or lng is None:
         return jsonify({"ok": False, "msg": "Missing email, password, location, latitude, or longitude"}), 400
     
-    hashed_password = generate_password_hash(password)
-    new_user = User(email=email, hashed_password=hashed_password, location=location, lat=lat, lng=lng)
+    new_user = User(email=email, location=location, lat=lat, lng=lng)
+    new_user.set_password(password)
     db.session.add(new_user)
     db.session.commit()
     
@@ -63,7 +63,7 @@ def login():
         return jsonify({"ok": False, "msg": "Missing email or password"}), 400
     
     user = User.query.filter_by(email=email).first()
-    if not user or not check_password_hash(user.hashed_password, password):
+    if not user or not user.check_password(password):
         return jsonify({"ok": False, "msg": "Invalid email or password"}), 401
     
     access_token = create_access_token(identity=user.id, expires_delta=timedelta(days=1))
@@ -208,7 +208,7 @@ def forgot_password():
     reset_url = f"{request.host_url}passwordChange?token={reset_token}"
     send_reset_email(user.email, reset_url)
     
-    return jsonify({"ok": True, "msg": "Password reset email sent"}), 200
+    return jsonify({"ok": True, "msg": "Password change email sent"}), 200
 
 def send_reset_email(to_email, reset_url):
     sg = sendgrid.SendGridAPIClient(api_key=os.getenv('SENDGRID_API_KEY'))
@@ -222,11 +222,10 @@ def send_reset_email(to_email, reset_url):
 @jwt_required()
 def reset_password():
     data = request.get_json()
-    token = data.get('token')
     new_password = data.get('new_password')
     email = get_jwt_identity()
     
-    if not new_password:
+    if not new_password or new_password == "":
         return jsonify({"ok": False, "msg": "New password required"}), 400
     
     user = User.query.filter_by(email=email).first()
@@ -234,8 +233,7 @@ def reset_password():
     if not user:
         return jsonify({"ok": False, "msg": "User not found"}), 404
     
-    hashed_password = generate_password_hash(new_password)
-    user.hashed_password = hashed_password
+    user.set_password(new_password)
     db.session.commit()
     
     return jsonify({"ok": True, "msg": "Password has been reset"}), 200

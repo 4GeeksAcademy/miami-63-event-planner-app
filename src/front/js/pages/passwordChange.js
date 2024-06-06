@@ -5,55 +5,47 @@ import PinITLogo from "../../img/PinIT-logo low-res.png";
 import "../../styles/passwordChange.css";
 
 export const PasswordChange = () => {
-	const { store, actions } = useContext(Context);
+//	const { store, actions } = useContext(Context);
 
 	
 	const [newPassword, setNewPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [token, setToken] = useState("");
+	const [problem, setProblem] = useState(null);
 	const location = useLocation();
-};
+
 	useEffect(() => {
 		const params = new URLSearchParams(location.search);
 		const tokenParam = params.get("token");
 		setToken(tokenParam);
 	}, [location]);
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 		if (newPassword === confirmPassword) {
-		  actions.changePassword(newPassword, token);
+			const result = await fetch("https://your-backend-endpoint.com/submit", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`
+				},
+				body: JSON.stringify({ new_password =  }),
+			});
+			if (result.ok) {
+				console.log('From passwordChange.js: user created successfully');
+				setProblem(null);
+				navigate('/login');
+			} else {
+				console.log(`From passwordChange.js: Error: ${result.msg}`);
+				setProblem(`Error: ${result.msg}`);
+			}
 		} else {
-		  alert("Passwords do not match");
+			console.log("From passwordChange.js: Passwords do not match");
+			setProblem(`Error: Passwords do not match`);
 		}
 	  };
 
-	// async function handleSubmit(e) {
-	// 	e.preventDefault();
-	// 	const response = await fetch("https://your-backend-endpoint.com/submit", {
-	// 		method: "POST",
-	// 		headers: {
-	// 			"Content-Type": "application/json",
-	// 		},
-	// 		body: JSON.stringify({ token, password }),
-	// 	});
-
-	// 	if (response.ok) {
-	// 		console.log("Password reset successfully");
-	// 	} else {
-	// 		console.error("Error reseting password");
-	// 	}
-	// }
-
-
-	const ChangePassword = () => {
 		return (
-		  <body>
-			<header>
-			  <a href="/login.html">
-				<img src="logo.png" alt="Logo" />
-			  </a>
-			</header>
 			<div className="wrapper">
 			  <div className="form-box login">
 				<h2>Change Password</h2>
@@ -71,8 +63,8 @@ export const PasswordChange = () => {
 				  <button type="submit" className="btn">Change Password</button>
 				</form>
 			  </div>
+			  {problem && <p className="problem">{problem}</p>}
 			</div>
-		  </body>
 		);
 	  };
 	
