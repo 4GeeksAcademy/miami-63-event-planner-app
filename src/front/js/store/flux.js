@@ -19,7 +19,8 @@ const getState = ({ getStore, getActions, setStore }) => {
                         body: JSON.stringify({ email, password, location }),
                     });
                     const data = await resp.json();
-                    return { ok: resp.ok, msg: data.msg };
+                    console.log(`From actions.newUser: ok: ${data.ok}, msg: ${data.msg}`);
+                    return data;
                 } catch (error) {
                     console.log("From actions.newUser: Error creating new user", error);
                     return { ok: false, msg: "Error creating new user" };
@@ -34,19 +35,19 @@ const getState = ({ getStore, getActions, setStore }) => {
                         body: JSON.stringify({email, password}),
                     });
                     const data = await resp.json();
-                    if (resp.ok) {
+                    if (data.ok) {
                         const store = getStore();
-                        localStorage.setItem("token", data.access_token);
-                        localStorage.setItem("email", data.email);
-                        localStorage.setItem("userID", data.user_id);
-                        localStorage.setItem("location", data.location);
-                        store.token = data.access_token;
-                        store.email = data.email;
-                        store.user_id = data.user_id;
-                        store.location = data.location
+                        localStorage.setItem("token", data.payload.access_token);
+                        localStorage.setItem("email", data.payload.email);
+                        localStorage.setItem("userID", data.payload.user_id);
+                        localStorage.setItem("location", data.payload.location);
+                        store.token = data.payload.access_token;
+                        store.email = data.payload.email;
+                        store.user_id = data.payload.user_id;
+                        store.location = data.payload.location;
                     }
-                    console.log(`From actions.login: ok: ${resp.ok}, msg: ${resp.msg}`);
-                    return { ok: resp.ok, msg: resp.msg };
+                    console.log(`From actions.login: ok: ${data.ok}, msg: ${data.msg}`);
+                    return { ok: data.ok, msg: data.msg };
                 } catch (error){
                     console.log("From actions.login: Error logging in", error);
                     return {ok: false, msg: "Error logging in"};
@@ -174,6 +175,21 @@ const getState = ({ getStore, getActions, setStore }) => {
                         return data;
                 }
             },  // closing data method
+
+            forgotPassword: async (email) => {
+                try {
+                    const resp = await fetch(process.env.BACKEND_URL + "/api/forgot-password", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email }),
+                    });
+                    const data = await resp.json();
+                    return data;
+                } catch (error) {
+                    console.log("From actions.forgotPassword: Error requesting the password change email", error);
+                    return { ok: false, msg: "Error requesting email" };
+                }
+            },  // closing forgotPassword method
 
             swipeEvent: (direction, event) => {
                 const actions = getActions();

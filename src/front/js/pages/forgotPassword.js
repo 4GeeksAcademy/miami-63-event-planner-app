@@ -5,13 +5,21 @@ import "../../styles/forgotPassword.css";
 
 const ForgotPassword = () => {
     const { store, actions } = useContext(Context);
+    const [problem, setProblem] = useState(null);
     const [email, setEmail] = useState("");
 
-    const handleSubmit = (e) => {
-		e.preventDefault();
-		actions.forgotPassword(email);
-	};
 
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		const result = await actions.forgotPassword(email);
+		if (result.ok) {
+			console.log('From forgotPassword.js: ${result.msg}');
+			setProblem(result.msg);
+		} else {
+			console.log(`From forgotPassword.js: Error: ${result.msg}`);
+			setProblem(`Error: ${result.msg}`);
+		}
+	};
     
     return (
         <div>
@@ -36,9 +44,14 @@ const ForgotPassword = () => {
                         </div>
                     </form>
                 </div>
+                {problem && <p className="problem">{problem}</p>}
             </div>
         </div>
     );
 };
 
 export default ForgotPassword;
+
+
+
+
