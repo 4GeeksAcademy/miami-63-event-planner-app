@@ -1,10 +1,42 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../store/appContext";
-import PinITLogo from "../../img/PinIT-logo low-res.png";
 import "../../styles/favorites.css";
 
 export const Favorites = () => {
 	const { store, actions } = useContext(Context);
+	const [favorites, setFavorites] = useState({});
+
+	useEffect(
+		async () => {
+			data = await actions.data("favorites");
+			setFavorites(data);
+		}
+		, [store.events]);
+
+	if (Object.keys(favorites).length === 0) {
+		return (
+			<div className="notReady">
+				<p>Loading...</p>
+			</div>
+		)
+	}
+
+	if (favorites.ok === false) {
+		return (
+			<div className="notReady">
+				<p>${favorites.msg}</p>
+				{favorites.msg === "Not logged in." && <Link to="/login" className="register-link">Log in</Link>}
+			</div>
+		)
+	}
+
+	if (favorites.payload.length === 0) {
+		return (
+			<div className="notReady">
+				<p>No favorites yet</p>
+			</div>
+		)
+	}
 
 	return (
 		<div className="text-center mt-5">

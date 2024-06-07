@@ -19,7 +19,7 @@ const AutoCompleteComponent = ({ address, setAddress }) => {
       setInputValue('');
       setPlaceholder(formattedAddress);
       setAddress({
-        formatted_address: formattedAddress,
+        location: formattedAddress,
         lat: location.lat(),
         lng: location.lng(),
       });

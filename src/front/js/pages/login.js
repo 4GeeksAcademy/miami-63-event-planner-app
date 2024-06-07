@@ -40,12 +40,12 @@ export const Login = () => {
 						<h2>Log in</h2>
 						<form onSubmit={handleSubmit}>
 							<div className="input-box">
-								<span className="icon"><ion-icon name="mail-outline"></ion-icon></span>
+								<span className="icon"><i class="bi bi-envelope"></i></span>
 								<input type="text" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} required />
 								<label>Email</label>
 							</div>
 							<div className="input-box">
-								<span className="icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
+								<span className="icon"><i class="bi bi-lock"></i></span>
 								<input type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} required />
 								<label>Password</label>
 							</div>

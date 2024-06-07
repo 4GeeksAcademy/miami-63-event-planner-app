@@ -1,17 +1,39 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../store/appContext";
-import PinITLogo from "../../img/PinIT-logo low-res.png";
 import "../../styles/homePage.css";
 
 export const HomePage = () => {
 	const { store, actions } = useContext(Context);
+	const [events, setEvents] = useState({});
+
+	useEffect(
+		async () => {
+			data = await actions.data("events");
+			setEvents(data);
+		}
+		, [store.events]);
+
+	if (events.length === 0) {
+		return (
+			<div className="notReady">
+				<p>Loading...</p>
+			</div>
+		)
+	}
+
+	if (events.ok === false) {
+		return (
+			<div className="notReady">
+				<p>${events.msg}</p>
+				{events.msg === "Not logged in." && <Link to="/login" className="register-link">Log in</Link>}
+			</div>
+		)
+	}
+	
 
 	return (
 		<div className="text-center mt-5">
 			<h1>Hello PinIT!!</h1>
-			<p>
-				<img src={PinITLogo} />
-			</p>
 			<div className="alert alert-info">
 				{store.message || "Loading message from the backend (make sure your python backend is running)..."}
 			</div>
