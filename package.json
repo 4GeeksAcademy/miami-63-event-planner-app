@@ -73,12 +73,16 @@
 		]
 	},
 	"dependencies": {
+		"@react-google-maps/api": "^2.19.3",
 		"bootstrap-icons": "^1.11.3",
+		"dotenv": "^16.4.5",
+		"framer-motion": "^11.2.10",
 		"prop-types": "^15.6.1",
-		"react": "^16.8.4",
-		"react-dom": "^16.8.4",
+		"react": "^18.3.1",
+		"react-dom": "^18.3.1",
 		"react-polyfills": "0.0.1",
 		"react-router-dom": "^6.3.0",
-		"react-tinder-card": "^1.6.4"
+		"react-tinder-card": "^1.6.4",
+		"styled-components": "^6.1.11"
 	}
 }

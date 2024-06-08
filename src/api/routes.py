@@ -39,9 +39,9 @@ def create_user():
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
-    location = data.get('location')
-    lat = data.get('lat')
-    lng = data.get('lng')
+    location = data.get("location").get('location')
+    lat = data.get("location").get('lat')
+    lng = data.get("location").get('lng')
     
     if not email or not password or not location or lat is None or lng is None:
         return jsonify({"ok": False, "msg": "Missing email, password, location, latitude, or longitude"}), 400

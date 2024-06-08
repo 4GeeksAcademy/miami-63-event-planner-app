@@ -1,55 +1,58 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { Context } from "../store/appContext";
-import PinITLogo from "../../img/PinIT-logo low-res.png;"
+import logo from '../../img/PinIT-logo low-res.png';
 import "../../styles/navbar.css";
 
-export const Favorites = () => {
-	const { store, actions } = useContext(Context);
+export const Navbar = () => {
+    const { store, actions } = useContext(Context);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
 
-	return (
-	<nav class="navbar">
-		<img src={PinITLogo} class="navbar-logo" alt="logo" />
-		<ul class="navbar-list">
-		
-		</ul>
+    const toggleDropdown = () => {
+        setDropdownOpen(!dropdownOpen);
+    };
 
-		<div class="profile-dropdown">
-			<div onclick="toggle()" class="profile-dropdown-btn">
-				<div class="profile-img">
-					<i>  <ion-icon name="ellipse"></ion-icon></i>
-				</div>
+    return (
+        <nav className="navbar">
+            <img src={logo} className="navbar-logo" alt="logo" />
+            <ul className="navbar-list">
+                {/* Add your navbar items here */}
+            </ul>
 
-				<span
-					>Michel R.
-					<i class="fa-solid fa-angle-down"></i>
-				</span>
-			</div>
+            <div className="profile-dropdown">
+                <div onClick={toggleDropdown} className="profile-dropdown-btn">
+                    <div className="profile-img">
+                        <i className="fa-solid fa-user"></i>
+                    </div>
+                    <span>
+                        Michel R.
+                        <i className="fa-solid fa-angle-down"></i>
+                    </span>
+                </div>
 
-			<ul class="profile-dropdown-list">
-
-				<li class="profile-dropdown-list-item">
-					<a href="favorites.html">
-						<i><ion-icon name="heart-outline"></ion-icon> </i>
-						Favorites
-					</a>
-				</li>
-
-				<li class="profile-dropdown-list-item">
-					<a href="#">
-					<i><ion-icon name="settings-outline"></ion-icon></i>
-					Settings
-					</a>
-				</li>
-				<hr />
-
-				<li class="profile-dropdown-list-item">
-					<a href="#">
-						<i> <ion-icon name="log-out-outline"></ion-icon></i>
-					Sign out
-					</a>
-				</li>
-			</ul>
-		</div>
-    </nav>
-	);
+                {dropdownOpen && (
+                    <ul className="profile-dropdown-list">
+                        <li className="profile-dropdown-list-item">
+                            <a href="favorites.html">
+                                <i className="ion-icon"><ion-icon name="heart-outline"></ion-icon></i>
+                                Favorites
+                            </a>
+                        </li>
+                        <li className="profile-dropdown-list-item">
+                            <a href="#">
+                                <i className="ion-icon"><ion-icon name="settings-outline"></ion-icon></i>
+                                Settings
+                            </a>
+                        </li>
+                        <hr />
+                        <li className="profile-dropdown-list-item">
+                            <a href="#">
+                                <i className="ion-icon"><ion-icon name="log-out-outline"></ion-icon></i>
+                                Sign out
+                            </a>
+                        </li>
+                    </ul>
+                )}
+            </div>
+        </nav>
+    );
 };

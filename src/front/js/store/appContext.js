@@ -23,7 +23,8 @@ const injectContext = PassedComponent => {
 
 		useEffect(() => {
 
-			state.actions.getMessage(); 
+			state.actions.setup();
+
 		}, []);
 
 		return (

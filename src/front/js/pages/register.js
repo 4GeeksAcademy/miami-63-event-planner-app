@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Context } from "../store/appContext";
 import PinITLogo from "../../img/PinIT-logo low-res.png";
-import AutoCompleteComponent from "../component/AutoCompleteComponent";
+import AutoCompleteComponent from "../component/autoCompleteComponent";
 import "../../styles/register.css";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -11,7 +11,7 @@ export const Register = () => {
 	const navigate = useNavigate();
 	const [problem, setProblem] = useState(null);
 	const [location, setLocation] = useState({
-		formatted_address: '',
+		location: null,
 		lat: null,
 		lng: null,
 	});
@@ -37,17 +37,17 @@ export const Register = () => {
 				<h2>Register</h2>
 				<form onSubmit={handleSubmit}>
 					<div className="input-box">
-						<span className="icon"><ion-icon name="mail-outline"></ion-icon></span>
+						<span className="icon"><i className="bi bi-envelope"></i></span>
 						<input type="text" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} required />
 						<label>Email</label>
 					</div>
 					<div className="input-box">
-						<span className="icon"><ion-icon name="navigate-outline"></ion-icon></span>
+						<span className="icon"><i className="bi bi-geo-alt"></i></span>
 						<AutoCompleteComponent address={location} setAddress={setLocation} />
-						<label>Address</label>
+						<label>Location</label>
 					</div>
 					<div className="input-box">
-						<span className="icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
+						<span className="icon"><i className="bi bi-lock"></i></span>
 						<input type="password" placeholder="Set a Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
 						<label>Password</label>
 					</div>
