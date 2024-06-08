@@ -55,8 +55,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 
             data: async (action, payload) => {
                 const store = getStore();
+                const token = localStorage.getItem("token") || store.token;
                 let response = { ok: false, msg: "This message was never changed by actions.data", payload: [] };
-                if (!store.token) {
+                if (!token) {
                     return { ok: false, msg: "Not logged in." }
                 }
                 switch (action) {
@@ -262,26 +263,48 @@ const getState = ({ getStore, getActions, setStore }) => {
             },  // closing logout method
 
             setup: () => {
-                if (localStorage.getItem("token")) {
-                    setStore({ token: JSON.parse(localStorage.getItem("token")) });    
+                console.log("From actions.setup: running");
+            
+                const token = localStorage.getItem("token");
+                if (token) {
+                    setStore({ token });
+                    console.log("From actions.setup: token set from local storage");
                 }
-                if (localStorage.getItem("email")) {
-                    setStore({ email: JSON.parse(localStorage.getItem("email")) });    
+            
+                const email = localStorage.getItem("email");
+                if (email) {
+                    setStore({ email: email });
+                    console.log("From actions.setup: email set from local storage");
                 }
-                if (localStorage.getItem("location")) {
-                    setStore({ location: JSON.parse(localStorage.getItem("location")) });    
+            
+                const location = localStorage.getItem("location");
+                if (location) {
+                    setStore({ location: location });
+                    console.log("From actions.setup: location set from local storage");
                 }
-                if (localStorage.getItem("userId")) {
-                    setStore({ user_id: JSON.parse(localStorage.getItem("userId")) });    
+            
+                const userId = localStorage.getItem("userId");
+                if (userId) {
+                    setStore({ user_id: userId });
+                    console.log("From actions.setup: userId set from local storage");
                 }
-                if (localStorage.getItem("events")) {
-                    setStore({ events: JSON.parse(localStorage.getItem("events")) });    
+            
+                const events = localStorage.getItem("events");
+                if (events) {
+                    setStore({ events: JSON.parse(events) });
+                    console.log("From actions.setup: events set from local storage");
                 }
-                if (localStorage.getItem("favorites")) {
-                    setStore({ favorites: JSON.parse(localStorage.getItem("favorites")) });    
+            
+                const favorites = localStorage.getItem("favorites");
+                if (favorites) {
+                    setStore({ favorites: JSON.parse(favorites) });
+                    console.log("From actions.setup: favorites set from local storage");
                 }
-                if (localStorage.getItem("currentIndex")) {
-                    setStore({ currentIndex: JSON.parse(localStorage.getItem("currentIndex")) });    
+            
+                const currentIndex = localStorage.getItem("currentIndex");
+                if (currentIndex) {
+                    setStore({ currentIndex: currentIndex });
+                    console.log("From actions.setup: currentIndex set from local storage");
                 }
             },  // closing setup method
 

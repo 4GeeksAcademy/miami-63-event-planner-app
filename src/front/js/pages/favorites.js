@@ -6,12 +6,14 @@ export const Favorites = () => {
 	const { store, actions } = useContext(Context);
 	const [favorites, setFavorites] = useState({});
 
-	useEffect(
-		async () => {
-			data = await actions.data("favorites");
-			setFavorites(data);
-		}
-		, [store.events]);
+	useEffect(() => {
+        const fetchData = async () => {
+            const data = await actions.data("favorites");
+            setFavorites(data);
+            console.log(`From favorites.js: local variable favorites set`)
+        };
+        fetchData();
+    }, []);
 
 	if (Object.keys(favorites).length === 0) {
 		return (
@@ -38,21 +40,29 @@ export const Favorites = () => {
 		)
 	}
 
-	return (
-		<div className="text-center mt-5">
-			<h1>Hello PinIT!!</h1>
-			<p>
-				<img src={PinITLogo} />
-			</p>
-			<div className="alert alert-info">
-				{store.message || "Loading message from the backend (make sure your python backend is running)..."}
-			</div>
-			<p>
-				This boilerplate comes with lots of documentation:{" "}
-				<a href="https://start.4geeksacademy.com/starters/react-flask">
-					Read documentation
-				</a>
-			</p>
-		</div>
-	);
+    const handleDelete = (id) => {
+        actions.data("delete", { id });
+    };
+
+    return (
+        <div className="favorites-page">
+            <h1>Favorite Events</h1>
+            <ul className="favorites-list">
+                {favorites.map(favorite => (
+                    <li key={favorite.id} className="favorite-item">
+                        <div className="favorite-banner">
+                            <h3>{favorite.title}</h3>
+                            <p>{favorite.startTime} - {favorite.endTime}</p>
+                            <p>{favorite.description}</p>
+                            <p>{favorite.location}</p>
+                            <div className="favorite-buttons">
+                                <a href="#" className="add-to-calendar">Add to Calendar</a>
+                                <button onClick={() => handleDelete(favorite.id)} className="delete-button">Delete</button>
+                            </div>
+                        </div>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
 };

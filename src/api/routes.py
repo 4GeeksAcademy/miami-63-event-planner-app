@@ -109,10 +109,11 @@ def get_events():
 
     for event in events_data.get('_embedded', {}).get('events', []):
         events.append({
+            "id": event.get('id'),
             "title": event.get('name'),
             "startTime": event.get('dates', {}).get('start', {}).get('dateTime'),
             "endTime": event.get('dates', {}).get('end', {}).get('dateTime'),
-            "description": event.get('info'),
+            "description": event.get('pleaseNote') or event.get('info') or "No description available.",
             "location": event.get('_embedded', {}).get('venues', [])[0].get('name'),
             "imageURL": event.get('images', [])[0].get('url') if event.get('images') else None
         })
@@ -143,7 +144,7 @@ def add_favorite():
     new_favorite = Favorites(
         user_id=user_id,
         title=title,
-        startTime=datetime.fromisoformat(start_time),
+        startTime=datetime.fromisoformat(start_time.replace("Z", "+00:00"),
         endTime=datetime.fromisoformat(end_time) if end_time else None,
         location=location,
         description=data.get('description'),

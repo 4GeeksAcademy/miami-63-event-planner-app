@@ -23,6 +23,7 @@ const injectContext = PassedComponent => {
 
 		useEffect(() => {
 
+			// localStorage.clear();
 			state.actions.setup();
 
 		}, []);
