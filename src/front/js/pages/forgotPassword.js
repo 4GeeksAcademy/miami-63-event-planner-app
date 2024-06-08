@@ -3,7 +3,7 @@ import { Context } from "../store/appContext";
 import PinITLogo from "../../img/PinIT-logo low-res.png";
 import "../../styles/forgotPassword.css";
 
-const ForgotPassword = () => {
+export const ForgotPassword = () => {
     const { store, actions } = useContext(Context);
     const [problem, setProblem] = useState(null);
     const [email, setEmail] = useState("");
@@ -49,8 +49,6 @@ const ForgotPassword = () => {
         </div>
     );
 };
-
-export default ForgotPassword;
 
 
 

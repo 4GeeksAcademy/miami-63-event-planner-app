@@ -37,17 +37,17 @@ export const Register = () => {
 				<h2>Register</h2>
 				<form onSubmit={handleSubmit}>
 					<div className="input-box">
-						<span className="icon"><i class="bi bi-envelope"></i></span>
+						<span className="icon"><i className="bi bi-envelope"></i></span>
 						<input type="text" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} required />
 						<label>Email</label>
 					</div>
 					<div className="input-box">
-						<span className="icon"><i class="bi bi-geo-alt"></i></span>
+						<span className="icon"><i className="bi bi-geo-alt"></i></span>
 						<AutoCompleteComponent address={location} setAddress={setLocation} />
-						<label>Address</label>
+						<label>Location</label>
 					</div>
 					<div className="input-box">
-						<span className="icon"><i class="bi bi-lock"></i></span>
+						<span className="icon"><i className="bi bi-lock"></i></span>
 						<input type="password" placeholder="Set a Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
 						<label>Password</label>
 					</div>
