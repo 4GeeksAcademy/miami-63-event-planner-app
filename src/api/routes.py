@@ -46,6 +46,10 @@ def create_user():
     if not email or not password or not location or lat is None or lng is None:
         return jsonify({"ok": False, "msg": "Missing email, password, location, latitude, or longitude"}), 400
     
+    user = User.query.filter_by(email=email).first()
+    if user:
+        return jsonify({"ok": False, "msg": "User already exists"}), 401
+    
     new_user = User(email=email, location=location, lat=lat, lng=lng)
     new_user.set_password(password)
     db.session.add(new_user)

@@ -29,7 +29,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
             login: async(email, password) => {
                 try {
-                    const resp = await fetch(process.env.BACKEND_URL + "/api/login", {
+                    const resp = await fetch(process.env.BACKEND_URL + "/api/users/login", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({email, password}),
