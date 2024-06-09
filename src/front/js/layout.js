@@ -22,7 +22,7 @@ const Layout = () => {
     return (
         <div>
             <BrowserRouter basename={basename}>
-                <Navbar />
+                {/* <Navbar /> */}
                 <Routes>
                     <Route path="/login" element={<Login />} />
                     <Route path="/homePage" element={<HomePage />} />

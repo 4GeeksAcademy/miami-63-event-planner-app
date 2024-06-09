@@ -229,7 +229,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             swipe: (action, event) => {
                 const actions = getActions();
                 const store = getStore();                
-                if (action === "right" || direction === "left") {
+                if (action === "right" || action === "left") {
                     if (action === "right") {
                         actions.data("add", event);
                     }                    
@@ -301,10 +301,10 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.log("From actions.setup: favorites set from local storage");
                 }
             
-                const currentIndex = localStorage.getItem("currentIndex");
+                const currentIndex = parseInt(localStorage.getItem("currentIndex"), 10);
                 if (currentIndex) {
                     setStore({ currentIndex: currentIndex });
-                    console.log("From actions.setup: currentIndex set from local storage");
+                    console.log(`From actions.setup: currentIndex: ${currentIndex} set from local storage`);
                 }
             },  // closing setup method
 

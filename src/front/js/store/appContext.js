@@ -24,6 +24,8 @@ const injectContext = PassedComponent => {
 		useEffect(() => {
 
 			// localStorage.clear();
+			// localStorage.removeItem("currentIndex");
+			// localStorage.removeItem("favorites");
 			state.actions.setup();
 
 		}, []);

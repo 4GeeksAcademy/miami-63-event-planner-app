@@ -144,7 +144,7 @@ def add_favorite():
     new_favorite = Favorites(
         user_id=user_id,
         title=title,
-        startTime=datetime.fromisoformat(start_time.replace("Z", "+00:00"),
+        startTime=datetime.fromisoformat(start_time.replace("Z", "+00:00")),
         endTime=datetime.fromisoformat(end_time) if end_time else None,
         location=location,
         description=data.get('description'),
@@ -156,7 +156,7 @@ def add_favorite():
     favorites = Favorites.query.filter_by(user_id=user_id).all()
     return jsonify({"ok": True, "msg": "Favorite added successfully", "payload": [favorite.serialize() for favorite in favorites]}), 201
 
-@api.route('/favorites/<int:id>', methods=['DELETE'])
+@api.route('/favorites/<string:id>', methods=['DELETE'])
 @jwt_required()
 def delete_favorite(id):
     user_id = get_jwt_identity()

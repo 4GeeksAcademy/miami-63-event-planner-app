@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../store/appContext";
 import "../../styles/favorites.css";
-
+import { Link } from "react-router-dom";
 export const Favorites = () => {
 	const { store, actions } = useContext(Context);
 	const [favorites, setFavorites] = useState({});
@@ -26,7 +26,7 @@ export const Favorites = () => {
 	if (favorites.ok === false) {
 		return (
 			<div className="notReady">
-				<p>${favorites.msg}</p>
+				<p>{favorites.msg}</p>
 				{favorites.msg === "Not logged in." && <Link to="/login" className="register-link">Log in</Link>}
 			</div>
 		)
@@ -44,11 +44,14 @@ export const Favorites = () => {
         actions.data("delete", { id });
     };
 
+    console.log(`From favorites.js: This are the favorites:`)
+    console.log(favorites.payload)
+
     return (
         <div className="favorites-page">
             <h1>Favorite Events</h1>
             <ul className="favorites-list">
-                {favorites.map(favorite => (
+                {favorites.payload.map(favorite => (
                     <li key={favorite.id} className="favorite-item">
                         <div className="favorite-banner">
                             <h3>{favorite.title}</h3>
