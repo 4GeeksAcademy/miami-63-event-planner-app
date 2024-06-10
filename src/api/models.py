@@ -67,7 +67,7 @@ class Favorites(db.Model):
     endTime = db.Column(db.DateTime, nullable=True)
     description = db.Column(db.String(255), nullable=True)
     location = db.Column(db.String(255), nullable=False)
-    imageURL = db.Column(db.String(255), nullable=True)
+    imageURL = db.Column(db.String(500), nullable=True)
 
     def __repr__(self):
         return f'<Favorites user_id={self.user_id} id={self.id}>'

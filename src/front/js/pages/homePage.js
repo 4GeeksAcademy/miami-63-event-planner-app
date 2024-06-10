@@ -19,7 +19,7 @@ export const HomePage = () => {
 
     if (events.length === 0) {
         return (
-            <div className="notReady">
+            <div className="frame">
                 <p>Loading...</p>
             </div>
         );
@@ -27,7 +27,7 @@ export const HomePage = () => {
 
     if (events.ok === false) {
         return (
-            <div className="notReady">
+            <div className="frame">
                 <p>{events.msg}</p>
                 {events.msg === "Not logged in." && <Link to="/login" className="register-link">Log in</Link>}
             </div>
@@ -38,7 +38,7 @@ export const HomePage = () => {
     console.log(events)
 
     return (
-        <div>
+        <div className="frame">
             <h1>Event Cards</h1>
             <CardsElement events={events.payload} />
         </div>

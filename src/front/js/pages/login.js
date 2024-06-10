@@ -26,7 +26,7 @@ export const Login = () => {
 	};
 
 	return (
-		<div>
+		<div className="frame">
 			<div className="login-container">
 				<header>
 					<img src={PinITLogo} alt="PinIT Logo" />

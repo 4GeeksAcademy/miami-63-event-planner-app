@@ -1,31 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
-import styled from "styled-components";
 import { Context } from "../store/appContext";
-
-// Styled motion.div component for the card
-const StyledCard = styled(motion.div)`
-  width: 300px;
-  height: 400px;
-  border-radius: 10px;
-  background: white;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 20px;
-  margin: 10px;
-  background-size: cover;
-  background-position: center;
-  position: absolute;
-  color: white;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-  overflow: hidden;
-  h3, p {
-    margin: 10px 0;
-  }
-`;
 
 const swipeVariants = {
   enter: { x: "100%", opacity: 0 },
@@ -40,9 +15,24 @@ const CardsElement = ({ events }) => {
   const [exitVariant, setExitVariant] = useState("");
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-20, 20]);
+  
+  let currentEvent = events[currentIndex];
+  let nextEvent = events[(currentIndex + 1) % events.length];
 
-  const currentEvent = events[currentIndex];
-  const nextEvent = events[(currentIndex + 1) % events.length];
+  const trimer = (text) => {
+    let place = -1;
+    for(let i = 0; i < text.length && i < 499; i++) {
+      if (text[i] === ".") {
+        place = i;
+      }
+    }
+    return place === -1 ? text.slice(0, 499) : text.slice(0, place + 1);
+  };
+
+  if(currentEvent && nextEvent) {
+    currentEvent.description = currentEvent.description ? trimer(currentEvent.description) : "";
+    nextEvent.description = nextEvent.description ? trimer(nextEvent.description) : "";
+  }
 
   useEffect(() => {
     setCurrentIndex(parseInt(store.currentIndex, 10) || 0);
@@ -55,7 +45,7 @@ const CardsElement = ({ events }) => {
       setCurrentIndex((currentIndex + 1) % events.length);
     } else if (info.offset.x < -100) {
       setExitVariant("exitLeft");
-      actions.swipe("left", currentEvent);
+      actions.swipe("left");
       setCurrentIndex((currentIndex + 1) % events.length);
     }
   };
@@ -64,7 +54,8 @@ const CardsElement = ({ events }) => {
     <div style={{ position: "relative", width: "300px", height: "400px" }}>
       <AnimatePresence initial={false}>
         {currentEvent && (
-          <StyledCard
+          <motion.div
+            className="home-card"
             key={currentEvent.id}
             variants={swipeVariants}
             initial="enter"
@@ -72,36 +63,37 @@ const CardsElement = ({ events }) => {
             exit={exitVariant}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
-            style={{ x, rotate, backgroundImage: `url(${currentEvent?.imageURL})`, zIndex: 1 }}
+            style={{ x, rotate, backgroundImage: `url(${currentEvent.imageURL})`, zIndex: 1 }}
             onDragEnd={handleDragEnd}
             whileTap={{ scale: 1.05 }}
           >
             {currentEvent.title && <h3>{currentEvent.title}</h3>}
-            {currentEvent.startTime && currentEvent.endTime && (
-              <p>{currentEvent.startTime} - {currentEvent.endTime}</p>
+            {currentEvent.startTime && (
+              <p>{currentEvent.startTime} - {new Date(new Date(currentEvent.startTime).getTime() + 60 * 60 * 1000).toISOString()}</p>
             )}
             {currentEvent.description && <p>{currentEvent.description}</p>}
             {currentEvent.location && <p>{currentEvent.location}</p>}
-          </StyledCard>
+          </motion.div>
         )}
       </AnimatePresence>
 
       <AnimatePresence initial={false}>
         {nextEvent && (
-          <StyledCard
+          <motion.div
+            className="home-card"
             key={nextEvent.id}
             variants={swipeVariants}
             initial="enter"
             animate="center"
-            style={{ backgroundImage: `url(${nextEvent?.imageURL})`, zIndex: 0 }}
+            style={{ backgroundImage: `url(${nextEvent.imageURL})`, zIndex: 0 }}
           >
             {nextEvent.title && <h3>{nextEvent.title}</h3>}
-            {nextEvent.startTime && nextEvent.endTime && (
-              <p>{nextEvent.startTime} - {nextEvent.endTime}</p>
+            {nextEvent.startTime && (
+              <p>{nextEvent.startTime} - {new Date(new Date(nextEvent.startTime).getTime() + 60 * 60 * 1000).toISOString()}</p>
             )}
             {nextEvent.description && <p>{nextEvent.description}</p>}
             {nextEvent.location && <p>{nextEvent.location}</p>}
-          </StyledCard>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

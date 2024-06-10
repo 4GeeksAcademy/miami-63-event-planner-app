@@ -6,7 +6,6 @@ from flask import Blueprint, request, jsonify
 from api.models import db, User, Favorites
 from api.utils import APIException
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, decode_token
-from werkzeug.security import generate_password_hash, check_password_hash
 import sendgrid
 from sendgrid.helpers.mail import Mail
 import requests
@@ -141,20 +140,24 @@ def add_favorite():
     if not title or not start_time or not location:
         return jsonify({"ok": False, "msg": "Missing title, start time, or location"}), 400
     
-    new_favorite = Favorites(
-        user_id=user_id,
-        title=title,
-        startTime=datetime.fromisoformat(start_time.replace("Z", "+00:00")),
-        endTime=datetime.fromisoformat(end_time) if end_time else None,
-        location=location,
-        description=data.get('description'),
-        imageURL=data.get('imageURL')
-    )
-    db.session.add(new_favorite)
-    db.session.commit()
-    
-    favorites = Favorites.query.filter_by(user_id=user_id).all()
-    return jsonify({"ok": True, "msg": "Favorite added successfully", "payload": [favorite.serialize() for favorite in favorites]}), 201
+    try:
+        new_favorite = Favorites(
+            user_id=user_id,
+            title=title,
+            startTime=datetime.fromisoformat(start_time.replace("Z", "+00:00")),
+            endTime=datetime.fromisoformat(end_time) if end_time else None,
+            location=location,
+            description=data.get('description'),
+            imageURL=data.get('imageURL')
+        )
+        db.session.add(new_favorite)
+        db.session.commit()
+        
+        favorites = Favorites.query.filter_by(user_id=user_id).all()
+        return jsonify({"ok": True, "msg": "Favorite added successfully", "payload": [favorite.serialize() for favorite in favorites]}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"ok": False, "msg": str(e)}), 500
 
 @api.route('/favorites/<string:id>', methods=['DELETE'])
 @jwt_required()
@@ -165,11 +168,15 @@ def delete_favorite(id):
     if not favorite:
         return jsonify({"ok": False, "msg": "Favorite not found"}), 404
     
-    db.session.delete(favorite)
-    db.session.commit()
-    
-    favorites = Favorites.query.filter_by(user_id=user_id).all()
-    return jsonify({"ok": True, "msg": "Favorite deleted successfully", "payload": [favorite.serialize() for favorite in favorites]}), 204
+    try:
+        db.session.delete(favorite)
+        db.session.commit()
+        
+        favorites = Favorites.query.filter_by(user_id=user_id).all()
+        return jsonify({"ok": True, "msg": "Favorite deleted successfully", "payload": [favorite.serialize() for favorite in favorites]}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"ok": False, "msg": str(e)}), 500
 
 @api.route('/user', methods=['PUT'])
 @jwt_required()
@@ -210,7 +217,7 @@ def forgot_password():
         return jsonify({"ok": False, "msg": "User not found"}), 404
     
     reset_token = create_access_token(identity=email, expires_delta=timedelta(minutes=10))
-    reset_url = f"{request.host_url}passwordChange?token={reset_token}"
+    reset_url = f'{os.getenv("FRONTEND_URL")}/passwordChange?token={reset_token}'
     send_reset_email(user.email, reset_url)
     
     return jsonify({"ok": True, "msg": "Password change email sent"}), 200

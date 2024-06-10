@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../store/appContext";
 import PinITLogo from "../../img/PinIT-logo low-res.png";
 import "../../styles/forgotPassword.css";
+import { Link } from "react-router-dom";
 
 export const ForgotPassword = () => {
     const { store, actions } = useContext(Context);
@@ -22,7 +23,7 @@ export const ForgotPassword = () => {
 	};
     
     return (
-        <div>
+        <div className="frame">
             <header>
             <Link to="/login">
             <img src={PinITLogo} alt="Logo" />
