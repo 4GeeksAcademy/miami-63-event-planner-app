@@ -1,63 +1,101 @@
-import React, { useContext } from "react";
-import { motion } from "framer-motion";
-import styled from "styled-components";
+import React, { useContext, useState, useEffect } from "react";
+import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { Context } from "../store/appContext";
 
-// Styled motion.div component for the card
-const StyledCard = styled(motion.div)`
-  width: 300px;
-  height: 400px;
-  border-radius: 10px;
-  background: white;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  margin: 10px;
-  background-size: cover;
-  background-position: center;
-  position: absolute;
-`;
+const swipeVariants = {
+  enter: { x: "100%", opacity: 0 },
+  center: { x: 0, opacity: 1 },
+  exitLeft: { x: "-100%", opacity: 0, transition: { duration: 0.5 } },
+  exitRight: { x: "100%", opacity: 0, transition: { duration: 0.5 } }
+};
 
 const CardsElement = ({ events }) => {
   const { store, actions } = useContext(Context);
-  const currentEvent = events[store.currentIndex];
-  const nextEvent = events[store.currentIndex + 1];
+  const [currentIndex, setCurrentIndex] = useState(parseInt(store.currentIndex, 10) || 0);
+  const [exitVariant, setExitVariant] = useState("");
+  const x = useMotionValue(0);
+  const rotate = useTransform(x, [-200, 200], [-20, 20]);
+  
+  let currentEvent = events[currentIndex];
+  let nextEvent = events[(currentIndex + 1) % events.length];
+
+  const trimer = (text) => {
+    let place = -1;
+    for(let i = 0; i < text.length && i < 499; i++) {
+      if (text[i] === ".") {
+        place = i;
+      }
+    }
+    return place === -1 ? text.slice(0, 499) : text.slice(0, place + 1);
+  };
+
+  if(currentEvent && nextEvent) {
+    currentEvent.description = currentEvent.description ? trimer(currentEvent.description) : "";
+    nextEvent.description = nextEvent.description ? trimer(nextEvent.description) : "";
+  }
+
+  useEffect(() => {
+    setCurrentIndex(parseInt(store.currentIndex, 10) || 0);
+  }, [store.currentIndex]);
+
+  const handleDragEnd = (event, info) => {
+    if (info.offset.x > 100) {
+      setExitVariant("exitRight");
+      actions.swipe("right", currentEvent);
+      setCurrentIndex((currentIndex + 1) % events.length);
+    } else if (info.offset.x < -100) {
+      setExitVariant("exitLeft");
+      actions.swipe("left");
+      setCurrentIndex((currentIndex + 1) % events.length);
+    }
+  };
 
   return (
     <div style={{ position: "relative", width: "300px", height: "400px" }}>
-      {nextEvent && (
-        <StyledCard
-          style={{ backgroundImage: `url(${nextEvent.imageURL})`, zIndex: 0 }}
-        >
-          <h3>{nextEvent.title}</h3>
-          <p>{nextEvent.startTime} - {nextEvent.endTime}</p>
-          <p>{nextEvent.description}</p>
-          <p>{nextEvent.location}</p>
-        </StyledCard>
-      )}
-      {currentEvent && (
-        <StyledCard
-          drag
-          dragConstraints={{ left: -300, right: 300, top: 0, bottom: 0 }}
-          onDragEnd={(event, info) => {
-            if (info.offset.x > 100) {
-              actions.swipe("right", currentEvent);
-            } else if (info.offset.x < -100) {
-              actions.swipe("left", currentEvent);
-            }
-          }}
-          whileTap={{ scale: 1.1 }}
-          style={{ backgroundImage: `url(${currentEvent.imageURL})`, zIndex: 1 }}
-        >
-          <h3>{currentEvent.title}</h3>
-          <p>{currentEvent.startTime} - {currentEvent.endTime}</p>
-          <p>{currentEvent.description}</p>
-          <p>{currentEvent.location}</p>
-        </StyledCard>
-      )}
+      <AnimatePresence initial={false}>
+        {currentEvent && (
+          <motion.div
+            className="home-card"
+            key={currentEvent.id}
+            variants={swipeVariants}
+            initial="enter"
+            animate="center"
+            exit={exitVariant}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            style={{ x, rotate, backgroundImage: `url(${currentEvent.imageURL})`, zIndex: 1 }}
+            onDragEnd={handleDragEnd}
+            whileTap={{ scale: 1.05 }}
+          >
+            {currentEvent.title && <h3>{currentEvent.title}</h3>}
+            {currentEvent.startTime && (
+              <p>{currentEvent.startTime} - {new Date(new Date(currentEvent.startTime).getTime() + 60 * 60 * 1000).toISOString()}</p>
+            )}
+            {currentEvent.description && <p>{currentEvent.description}</p>}
+            {currentEvent.location && <p>{currentEvent.location}</p>}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence initial={false}>
+        {nextEvent && (
+          <motion.div
+            className="home-card"
+            key={nextEvent.id}
+            variants={swipeVariants}
+            initial="enter"
+            animate="center"
+            style={{ backgroundImage: `url(${nextEvent.imageURL})`, zIndex: 0 }}
+          >
+            {nextEvent.title && <h3>{nextEvent.title}</h3>}
+            {nextEvent.startTime && (
+              <p>{nextEvent.startTime} - {new Date(new Date(nextEvent.startTime).getTime() + 60 * 60 * 1000).toISOString()}</p>
+            )}
+            {nextEvent.description && <p>{nextEvent.description}</p>}
+            {nextEvent.location && <p>{nextEvent.location}</p>}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

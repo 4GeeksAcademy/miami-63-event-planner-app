@@ -12,13 +12,14 @@ export const HomePage = () => {
         const fetchData = async () => {
             const data = await actions.data("events");
             setEvents(data);
+            console.log(`From homePage.js: local variable events set`)
         };
         fetchData();
-    }, [store.events]);
+    }, []);
 
     if (events.length === 0) {
         return (
-            <div className="notReady">
+            <div className="frame">
                 <p>Loading...</p>
             </div>
         );
@@ -26,17 +27,20 @@ export const HomePage = () => {
 
     if (events.ok === false) {
         return (
-            <div className="notReady">
+            <div className="frame">
                 <p>{events.msg}</p>
                 {events.msg === "Not logged in." && <Link to="/login" className="register-link">Log in</Link>}
             </div>
         );
     }
 
+    console.log(`From homePage.js: This are the events:`)
+    console.log(events)
+
     return (
-        <div>
+        <div className="frame">
             <h1>Event Cards</h1>
-            <CardsElement events={events} />
+            <CardsElement events={events.payload} />
         </div>
     );
 };

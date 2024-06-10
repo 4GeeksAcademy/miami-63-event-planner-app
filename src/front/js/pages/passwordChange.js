@@ -53,25 +53,27 @@ export const PasswordChange = () => {
 	  };
 
 		return (
-			<div className="wrapper">
-			  <div className="form-box login">
-				<h2>Change Password</h2>
-				<form onSubmit={handleSubmit}>
-				  <div className="input-box">
+			<div className="frame">
+				<div className="wrapper">
+				<div className="form-box login">
+					<h2>Change Password</h2>
+					<form onSubmit={handleSubmit}>
+					<div className="input-box">
 
-				  <span className="icon"><i class="bi bi-lock"></i></span>
-					<input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
-					<label>New Password</label>
-				  </div>
-				  <div className="input-box">
 					<span className="icon"><i class="bi bi-lock"></i></span>
-					<input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-					<label>Confirm New Password </label>
-				  </div>
-				  <button type="submit" className="btn">Change Password</button>
-				</form>
-			  </div>
-			  {problem && <p className="problem">{problem}</p>}
+						<input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+						<label>New Password</label>
+					</div>
+					<div className="input-box">
+						<span className="icon"><i class="bi bi-lock"></i></span>
+						<input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+						<label>Confirm New Password </label>
+					</div>
+					<button type="submit" className="btn">Change Password</button>
+					</form>
+				</div>
+				{problem && <p className="problem">{problem}</p>}
+				</div>
 			</div>
 		);
 	  };
