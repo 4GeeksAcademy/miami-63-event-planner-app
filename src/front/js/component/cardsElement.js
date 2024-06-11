@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { Context } from "../store/appContext";
+import { format } from "date-fns";
 
 const swipeVariants = {
   enter: { x: "100%", opacity: 0 },
@@ -51,7 +52,7 @@ const CardsElement = ({ events }) => {
   };
 
   return (
-    <div style={{ position: "relative", width: "300px", height: "400px" }}>
+    <div style={{ position: "relative", width: "400px", height: "600px" }}> {/* Adjusted size for bigger display */}
       <AnimatePresence initial={false}>
         {currentEvent && (
           <motion.div
@@ -69,7 +70,7 @@ const CardsElement = ({ events }) => {
           >
             {currentEvent.title && <h3>{currentEvent.title}</h3>}
             {currentEvent.startTime && (
-              <p>{currentEvent.startTime} - {new Date(new Date(currentEvent.startTime).getTime() + 60 * 60 * 1000).toISOString()}</p>
+              <p>{format(new Date(currentEvent.startTime), 'MMMM d, yyyy h:mm a')}</p> // Better date formatting
             )}
             {currentEvent.description && <p>{currentEvent.description}</p>}
             {currentEvent.location && <p>{currentEvent.location}</p>}
@@ -89,7 +90,7 @@ const CardsElement = ({ events }) => {
           >
             {nextEvent.title && <h3>{nextEvent.title}</h3>}
             {nextEvent.startTime && (
-              <p>{nextEvent.startTime} - {new Date(new Date(nextEvent.startTime).getTime() + 60 * 60 * 1000).toISOString()}</p>
+              <p>{format(new Date(nextEvent.startTime), 'MMMM d, yyyy h:mm a')}</p> // Better date formatting
             )}
             {nextEvent.description && <p>{nextEvent.description}</p>}
             {nextEvent.location && <p>{nextEvent.location}</p>}
