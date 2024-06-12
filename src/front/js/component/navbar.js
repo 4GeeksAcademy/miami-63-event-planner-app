@@ -46,7 +46,7 @@ export const Navbar = () => {
 
     return (
         <nav className="navbar-div">
-            {currentPath !== '/login' && <img src={logo} className="navbar-logo" alt="logo" />}
+            {currentPath !== '/login' ? <img src={logo} className="navbar-logo" alt="logo" /> : <div></div>}
 
                 {store.token ? (
                     <div className="navigation-div">
