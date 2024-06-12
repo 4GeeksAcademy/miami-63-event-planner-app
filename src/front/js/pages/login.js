@@ -35,8 +35,8 @@ export const Login = () => {
 						<p> Tailored just for you!</p>
 					</div>
 				</header>
-				<div className="wrapper">
-					<div className="form-box login">
+				<div className="card">
+					<div className="form-box">
 						<h2>Log in</h2>
 						<form onSubmit={handleSubmit}>
 							<div className="input-box">

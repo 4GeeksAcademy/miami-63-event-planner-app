@@ -211,6 +211,43 @@ const getState = ({ getStore, getActions, setStore }) => {
                 }
             },  // closing data method
 
+            changeLocation: async (location) => {
+                console.log(`From actions.changeLocation: this is the location sent:`)
+                console.log(`${location.lat}`)
+                console.log(`${location.lng}`)
+                console.log(`${location.location}`)
+                const store = getStore();
+                try {
+                    const resp = await fetch(`${process.env.BACKEND_URL}/api/user`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${store.token}`
+                        },
+                        body: JSON.stringify({
+                            location: location.location,
+                            lat: location.lat,
+                            lng: location.lng
+                        })
+                    });
+                    const data = await resp.json();
+                    if (data.ok) {
+                        setStore({ location: location.location });
+                        setStore({events: []});
+                        localStorage.setItem("location", location.location);
+                        localStorage.removeItem("events");
+                        console.log("From actions.changeLocation: Location updated successfully to: " + location.location);
+                        return { ok: true, msg: data.msg };
+                    } else {
+                        console.log(`From actions.changeLocation: Error updating location: ${data.msg}`);
+                        return { ok: false, msg: data.msg };
+                    }
+                } catch (error) {
+                    console.log("From actions.changeLocation: Error updating location", error);
+                    return { ok: false, msg: "Error updating location" };
+                }
+            },
+
             forgotPassword: async (email) => {
                 try {
                     const resp = await fetch(process.env.BACKEND_URL + "/api/forgot-password", {

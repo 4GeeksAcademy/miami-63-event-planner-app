@@ -33,7 +33,7 @@ export const Register = () => {
 
 	return (
 		<div className="frame">
-			<div className="wrapper">
+			<div className="card">
 				<div className="form-box register">
 					<h2>Register</h2>
 					<form onSubmit={handleSubmit}>
@@ -42,7 +42,7 @@ export const Register = () => {
 							<input type="text" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} required />
 							<label>Email</label>
 						</div>
-						<div className="input-box">
+						<div className="input-box autoCompleteComponent">
 							<span className="icon"><i className="bi bi-geo-alt"></i></span>
 							<AutoCompleteComponent address={location} setAddress={setLocation} />
 							<label>Location</label>

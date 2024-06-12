@@ -54,7 +54,7 @@ export const PasswordChange = () => {
 
 		return (
 			<div className="frame">
-				<div className="wrapper">
+				<div className="card">
 				<div className="form-box login">
 					<h2>Change Password</h2>
 					<form onSubmit={handleSubmit}>

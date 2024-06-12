@@ -24,12 +24,7 @@ export const ForgotPassword = () => {
     
     return (
         <div className="frame">
-            <header>
-            <Link to="/login">
-            <img src={PinITLogo} alt="Logo" />
-                </Link>
-            </header>
-            <div className="wrapper">
+            <div className="card">
                 <div className="form-box login">
                     <h2>Forgot password?</h2>
                     <h3>Enter your email and we will send you a link to reset your password.</h3>
