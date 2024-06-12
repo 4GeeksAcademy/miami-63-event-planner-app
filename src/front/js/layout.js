@@ -1,6 +1,5 @@
 import React from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
-import { BackendURL } from "./component/backendURL";
 import { HomePage } from "./pages/homePage";
 import { Favorites } from "./pages/favorites";
 import { Login } from "./pages/login";
@@ -12,12 +11,11 @@ import { Navbar } from "./component/navbar";
 
 const Layout = () => {
 
-     if (!process.env.BACKEND_URL || process.env.BACKEND_URL === "") return <BackendURL />;
 
     return (
         <div>
             <BrowserRouter>
-                {/* <Navbar /> */}<Navbar />
+                <Navbar />
                 <Routes>
                     <Route path="/login" element={<Login />} />
                     <Route path="/homePage" element={<HomePage />} />
