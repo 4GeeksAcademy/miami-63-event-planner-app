@@ -12,7 +12,7 @@ import { Navbar } from "./component/navbar";
 
 const Layout = () => {
 
-     if (!process.env.BACKEND_URL || process.env.BACKEND_URL === "") return <BackendURL />;
+    //  if (!process.env.BACKEND_URL || process.env.BACKEND_URL === "") return <BackendURL />;
 
     return (
         <div>
