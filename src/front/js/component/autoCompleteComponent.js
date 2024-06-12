@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
 import { LoadScript, Autocomplete } from '@react-google-maps/api';
-
 const libraries = ['places'];
 const apiKey = process.env.REACT_APP_GOOGLE_API;
-
 const AutoCompleteComponent = ({ address, setAddress }) => {
   const [autocomplete, setAutocomplete] = useState(null);
   const [inputValue, setInputValue] = useState('');
-
   const onLoad = (autoC) => setAutocomplete(autoC);
-
   const onPlaceChanged = () => {
     if (autocomplete !== null) {
       const place = autocomplete.getPlace();
@@ -27,7 +23,6 @@ const AutoCompleteComponent = ({ address, setAddress }) => {
       console.log('Autocomplete is not loaded yet!');
     }
   };
-
   return (
     <LoadScript
       googleMapsApiKey={apiKey}

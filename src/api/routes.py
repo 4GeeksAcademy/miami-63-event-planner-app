@@ -73,7 +73,7 @@ def get_events():
 
     ticketmaster_url = "https://app.ticketmaster.com/discovery/v2/events.json"
     params = {
-        'size' : '20',
+        'size' : '100',
         'apikey': os.getenv('TICKETMASTER_API'),
         'latlong': f"{lat},{lng}",
         'radius': 50,

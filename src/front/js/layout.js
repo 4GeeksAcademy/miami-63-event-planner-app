@@ -11,7 +11,6 @@ import { Navbar } from "./component/navbar";
 
 const Layout = () => {
 
-
     return (
         <div>
             <BrowserRouter>
