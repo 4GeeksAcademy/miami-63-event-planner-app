@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Context } from "../store/appContext";
+import { format } from "date-fns";
 import "../../styles/favorites.css";
 import { Link } from "react-router-dom";
 
@@ -19,7 +20,7 @@ export const Favorites = () => {
     if (favorites === null) {
         return (
             <div className="frame">
-                <p>Loading...</p>
+                <h1>Loading...</h1>
             </div>
         );
     }
@@ -27,7 +28,7 @@ export const Favorites = () => {
     if (favorites.ok === false) {
         return (
             <div className="frame">
-                <p>{favorites.msg}</p>
+                <h1>{favorites.msg}</h1>
                 {favorites.msg === "Not logged in." && <Link to="/login" className="register-link">Log in</Link>}
             </div>
         );
@@ -36,7 +37,7 @@ export const Favorites = () => {
     if (favorites.payload.length === 0) {
         return (
             <div className="frame">
-                <p>No favorites yet</p>
+                <h1>No favorites yet. Let's make some plans!</h1>
             </div>
         );
     }
@@ -65,21 +66,27 @@ export const Favorites = () => {
 
     return (
         <div className="frame">
-            <h1>Favorite Events</h1>
+            <h1>Here are your upcoming great exeriences!</h1>
             <ul className="favorites-list">
                 {favorites.payload.map(favorite => (
                     <li key={favorite.id} className="favorite-item">
-                        <div className="favorite-banner">
-                            <h3>{favorite.title}</h3>
-                            <p>{favorite.startTime} - {new Date(new Date(favorite.startTime).getTime() + 60 * 60 * 1000).toISOString()}</p>
-                            <p>{favorite.description}</p>
-                            <p>{favorite.location}</p>
-                            <div className="favorite-buttons">
-                                <a className="add-to-calendar" href={generateGoogleCalendarLink(favorite)} target="_blank" rel="noopener noreferrer">
-                                    <i className="bi bi-calendar-plus"></i>
-                                </a>
-                                <button onClick={() => handleDelete(favorite.id)} className="delete-button">X</button>
+                        <div className="favorite-image" style={{ backgroundImage: `url(${favorite.imageURL})` }}></div>
+                        <div className="favorite-text">
+                            <div className="favorite-super-text">
+                                <h2>{favorite.title}</h2>
+                                <h4>{format(new Date(favorite.startTime), 'MMMM d, yyyy h:mm a')}</h4>
+                                <h5>{favorite.description}</h5>
                             </div>
+                            <div className="favorite-sub-text">
+                                <h5>{favorite.location}</h5>
+                                <p>{favorite.address}</p>
+                            </div>
+                        </div>
+                        <div className="favorite-buttons">
+                            <button onClick={() => handleDelete(favorite.id)} className="delete-button">X</button>
+                            <a className="add-to-calendar" href={generateGoogleCalendarLink(favorite)} target="_blank" rel="noopener noreferrer">
+                                <i className="bi bi-calendar-plus"></i>
+                            </a>
                         </div>
                     </li>
                 ))}

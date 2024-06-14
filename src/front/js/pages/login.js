@@ -21,7 +21,7 @@ export const Login = () => {
 			navigate('/homePage');
 		} else {
 			console.log(`From login.js: Error: ${result.msg}`);
-			setProblem(`Error: ${result.msg}`);
+			setProblem(`${result.msg}`);
 		}
 	};
 
@@ -60,8 +60,8 @@ export const Login = () => {
 							</div>
 						</form>
 					</div>
+					{problem && <p className="problem">{problem}</p>}
 				</div>
-				{problem && <p className="problem">{problem}</p>}
 			</div>
 		</div>
 	);

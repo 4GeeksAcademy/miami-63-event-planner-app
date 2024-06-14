@@ -15,12 +15,12 @@ export const HomePage = () => {
             console.log(`From homePage.js: local variable events set`)
         };
         fetchData();
-    }, []);
+    }, [store.events]);
 
     if (events.length === 0) {
         return (
             <div className="frame">
-                <p>Loading...</p>
+                <h1>Loading...</h1>
             </div>
         );
     }
@@ -28,7 +28,7 @@ export const HomePage = () => {
     if (events.ok === false) {
         return (
             <div className="frame">
-                <p>{events.msg}</p>
+                <h1>{events.msg}</h1>
                 {events.msg === "Not logged in." && <Link to="/login" className="register-link">Log in</Link>}
             </div>
         );
@@ -39,7 +39,7 @@ export const HomePage = () => {
 
     return (
         <div className="frame">
-            <h1>Event Cards</h1>
+            <h1>Let's swipe your plans off their feet!</h1>
             <CardsElement events={events.payload} />
         </div>
     );

@@ -24,8 +24,8 @@ def create_user():
     lat = data.get("location").get('lat')
     lng = data.get("location").get('lng')
     
-    if not email or not password or not location or lat is None or lng is None:
-        return jsonify({"ok": False, "msg": "Missing email, password or location"}), 400
+    if not location or lat is None or lng is None:
+        return jsonify({"ok": False, "msg": "Location missing"}), 400
     
     user = User.query.filter_by(email=email).first()
     if user:
@@ -88,15 +88,33 @@ def get_events():
     events_data = response.json()
     events = []
 
+    def get_widest_image_url(event):
+        # Initialize variables to keep track of the widest image
+        widest_image_url = None
+        max_width = 0
+        
+        # Loop through the images in the event
+        for image in event.get('images', []):
+            # Get the width of the current image
+            width = image.get('width', 0)
+            
+            # If the current image is wider than the previously found widest image
+            if width > max_width:
+                max_width = width
+                widest_image_url = image.get('url')
+        
+        return widest_image_url
+
     for event in events_data.get('_embedded', {}).get('events', []):
+        venue = event.get('_embedded', {}).get('venues', [])[0] if event.get('_embedded', {}).get('venues') else {}
         events.append({
             "id": event.get('id'),
             "title": event.get('name'),
             "startTime": event.get('dates', {}).get('start', {}).get('dateTime'),
-            "endTime": event.get('dates', {}).get('end', {}).get('dateTime'),
             "description": event.get('pleaseNote') or event.get('info') or "No description available.",
-            "location": event.get('_embedded', {}).get('venues', [])[0].get('name'),
-            "imageURL": event.get('images', [])[0].get('url') if event.get('images') else None
+            "location": venue.get('name'),
+            "imageURL": get_widest_image_url(event) if event.get('images') else None,
+            "address": f"{venue.get('address', {}).get('line1')}, {venue.get('city', {}).get('name')}, {venue.get('state', {}).get('name')}, {venue.get('country', {}).get('name')}, {venue.get('postalCode')}"
         })
 
     return jsonify({"ok": True, "msg": "Events fetched successfully", "payload": events}), 200
@@ -104,9 +122,28 @@ def get_events():
 @api.route('/favorites', methods=['GET'])
 @jwt_required()
 def get_favorites():
-    user_id = get_jwt_identity()
-    favorites = Favorites.query.filter_by(user_id=user_id).all()
-    return jsonify({"ok": True, "msg": "Favorites retrieved successfully", "payload": [favorite.serialize() for favorite in favorites]}), 200
+    try:
+        user_id = get_jwt_identity()
+        
+        # Check if the user exists
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({"ok": False, "msg": "User not found"}), 404
+        
+        # Retrieve favorites
+        favorites = Favorites.query.filter_by(user_id=user_id).all()
+        
+        if not favorites:
+            return jsonify({"ok": True, "msg": "No favorites found", "payload": []}), 200
+
+        return jsonify({"ok": True, "msg": "Favorites retrieved successfully", "payload": [favorite.serialize() for favorite in favorites]}), 200
+
+    except SQLAlchemyError as e:
+        logging.error(f"Database error: {str(e)}")
+        return jsonify({"ok": False, "msg": "Database error"}), 500
+    except Exception as e:
+        logging.error(f"Unexpected error: {str(e)}")
+        return jsonify({"ok": False, "msg": "An unexpected error occurred"}), 500
 
 @api.route('/favorites', methods=['POST'])
 @jwt_required()
@@ -116,10 +153,10 @@ def add_favorite():
     
     title = data.get('title')
     start_time = data.get('startTime')
-    end_time = data.get('endTime')
     location = data.get('location')
+    address = data.get('address')
     
-    if not title or not start_time or not location:
+    if not title or not start_time or not location or not address:
         return jsonify({"ok": False, "msg": "Missing title, start time, or location"}), 400
     
     try:
@@ -127,8 +164,8 @@ def add_favorite():
             user_id=user_id,
             title=title,
             startTime=datetime.fromisoformat(start_time.replace("Z", "+00:00")),
-            endTime=datetime.fromisoformat(end_time) if end_time else None,
             location=location,
+            address=address,
             description=data.get('description'),
             imageURL=data.get('imageURL')
         )

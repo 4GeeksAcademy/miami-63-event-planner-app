@@ -33,7 +33,6 @@ const AutoCompleteComponent = ({ address, setAddress }) => {
     >
       <Autocomplete onLoad={onLoad} onPlaceChanged={onPlaceChanged}>
         <input
-          className="input-box"
           type="text"
           placeholder="Enter address"
           value={inputValue}
