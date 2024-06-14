@@ -83,7 +83,7 @@ body{
 }
 
 .input-box input {
-  color: #78d;
+  color: rgb(187, 195, 235);
   margin: 0.2vw 0;
   padding: 0;
   width: 100%;
@@ -92,7 +92,7 @@ body{
   border: none;
   outline: none;
   font-size: 0.9vw;
-  font-weight: 400;
+  font-weight: 600;
  
 }
 
@@ -141,7 +141,8 @@ body{
 }
 
 .login-register a {
-  color: #5a60ff;
+  color: #484eff;
+  font-weight: 600;
 }
 
 .login-register a:hover {
@@ -151,11 +152,13 @@ body{
 .problem {
   display: flex;
   font-size: 0.8vw;
-  color: #ff6545;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 1vw;
+  color: #ff2a00;
   text-align: center;
   font-weight: 400;
   margin: 0 0 1.5vw 0;
-  padding-top: 0.3vw;
+  padding: 0.2vw 0.5vw;
   max-width: 17vw;
 }
 
