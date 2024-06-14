@@ -38,7 +38,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                     if (data.ok) {
                         localStorage.setItem("token", data.payload.access_token);
                         localStorage.setItem("email", data.payload.email);
-                        localStorage.setItem("userID", data.payload.user_id);
+                        localStorage.setItem("userId", data.payload.user_id);
                         localStorage.setItem("location", data.payload.location);
                         setStore({token: data.payload.access_token});
                         setStore({email: data.payload.email});
@@ -150,13 +150,23 @@ const getState = ({ getStore, getActions, setStore }) => {
             
                     case "add":
                         try {
+                            let text = payload;
+                            if(payload.description) {
+                                let place = -1;
+                                for(let i = 0; i < text.description.length && i < 250; i++) {
+                                  if (text.description[i] === ".") {
+                                    place = i;
+                                  }
+                                }
+                                text.description = place === -1 ? text.description.slice(0, 250) : text.description.slice(0, place + 1);
+                              }
                             const resp = await fetch(process.env.BACKEND_URL + "/api/favorites", {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json",
                                     Authorization: `Bearer ${store.token}`
                                 },
-                                body: JSON.stringify(payload)
+                                body: JSON.stringify(text)
                             });
                             const favorites = await resp.json();
                             if (favorites.ok) {
@@ -237,6 +247,7 @@ const getState = ({ getStore, getActions, setStore }) => {
                         localStorage.setItem("location", location.location);
                         localStorage.removeItem("events");
                         console.log("From actions.changeLocation: Location updated successfully to: " + location.location);
+                        getActions().data("events")
                         return { ok: true, msg: data.msg };
                     } else {
                         console.log(`From actions.changeLocation: Error updating location: ${data.msg}`);

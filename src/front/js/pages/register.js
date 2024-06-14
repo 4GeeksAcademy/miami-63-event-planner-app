@@ -27,7 +27,7 @@ export const Register = () => {
 			navigate('/login');
 		} else {
 			console.log(`From register.js: Error: ${result.msg}`);
-			setProblem(`Error: ${result.msg}`);
+			setProblem(`${result.msg}`);
 		}
 	};
 

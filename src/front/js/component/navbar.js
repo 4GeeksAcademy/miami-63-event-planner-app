@@ -9,7 +9,7 @@ import "../../styles/navbar.css";
 export const Navbar = () => {
     const { store, actions } = useContext(Context);
     const [userCardOpen, setUserCardOpen] = useState(false);
-    const [changeLocation, setChangeLocation] = useState(false)
+    const [changeLocation, setChangeLocation] = useState(false);
     const [address, setAddress] = useState({
 		location: null,
 		lat: null,
@@ -52,7 +52,8 @@ export const Navbar = () => {
                     <div className="navigation-div">
 
                         {currentPath === '/homePage' ? (
-                            <div>
+                            <div style={{display: "flex"}}>
+                                <button className="undo-swipe" onClick={() => actions.swipe("undo")}>Un-swipe<i className="bi bi-arrow-counterclockwise"></i></button>
                                 <Link to="/favorites">
                                     <button className="navbar-btn">Go to favorites</button>
                                 </Link>
@@ -86,7 +87,7 @@ export const Navbar = () => {
                                             exit="exit"
                                         >
                                             <div className="user-box">
-                                                <button onClick={() => setUserCardOpen(false)} className="close btn">X</button>
+                                                <button onClick={() => setUserCardOpen(false)} className="close">X</button>
                                                 <h3>User: {getUserName()}</h3>
                                                 <h4>Email</h4>
                                                 <p>{store.email || "--"}</p>
@@ -94,30 +95,36 @@ export const Navbar = () => {
                                                 <p>{store.user_id || "--"}</p>
                                                 <h4>Location</h4>
                                                 {!changeLocation ? (
-                                                    <div style={{display: "flex"}}>
-                                                    <p>{store.location || "--"}</p>
-                                                    <button onClick={() => setChangeLocation(true)}><i className="bi bi-pencil"></i></button>
+                                                    <div>
+                                                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                                                            <p>{store.location || "--"}</p>
+                                                            <button className="navbar-location-btn" onClick={() => setChangeLocation(true)}><i className="bi bi-pencil"></i></button>
+                                                        </div>
                                                     </div>
                                                 ) : (
-                                                    <div>
-                                                    <AutoCompleteComponent address={address} setAddress={setAddress} />
-                                                    <button onClick={
-                                                        async (e) => {
-                                                            e.preventDefault();
-                                                            console.log(`From navbar.js: this is the location sent:`)
-                                                            console.log(`${address.lat}`)
-                                                            console.log(`${address.lng}`)
-                                                            console.log(`${address.location}`)
-                                                            const result = await actions.changeLocation(address);
-                                                            if (result.ok) {
-                                                                console.log(`From navbar.js: ${result.msg}`);
-                                                                setProblem(null);
-                                                            } else {
-                                                                console.log(`From navbar.js: Error: ${result.msg}`);
-                                                                setProblem(`Error: ${result.msg}`);
-                                                            }
-                                                            setChangeLocation(false)
-                                                        }}><i className="bi bi-floppy"></i></button>
+                                                    <div className="navbar-autoCompleteComponent">
+                                                        <div>
+                                                            <span><i className="bi bi-geo-alt"></i></span>
+                                                            <AutoCompleteComponent address={address} setAddress={setAddress} />
+                                                        </div>
+                                                        <button className="navbar-location-btn" onClick={
+                                                            async (e) => {
+                                                                e.preventDefault();
+                                                                console.log(`From navbar.js: this is the location sent:`)
+                                                                console.log(`${address.lat}`)
+                                                                console.log(`${address.lng}`)
+                                                                console.log(`${address.location}`)
+                                                                const result = await actions.changeLocation(address);
+                                                                if (result.ok) {
+                                                                    console.log(`From navbar.js: ${result.msg}`);
+                                                                    setProblem(null);
+                                                                } else {
+                                                                    console.log(`From navbar.js: Error: ${result.msg}`);
+                                                                    setProblem(`Error: ${result.msg}`);
+                                                                }
+                                                                setChangeLocation(false)
+                                                            }}><i className="bi bi-floppy"></i>
+                                                        </button>
                                                     </div>
                                                 )}
                                                 <button className="logout navbar-btn" onClick={() => { actions.logout(); setUserCardOpen(false); navigate('/login'); }}>
@@ -135,7 +142,7 @@ export const Navbar = () => {
                             <div className="profile-img">
                                 <i className="bi bi-person-fill"></i>
                             </div>
-                            <span>
+                            <span className="login-register">
                                 <Link to="/login">Log in</Link>
                             </span>
                     </div>

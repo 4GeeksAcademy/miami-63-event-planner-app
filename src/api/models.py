@@ -64,9 +64,9 @@ class Favorites(db.Model):
     user_id = db.Column(db.String(6), db.ForeignKey('user.id'), nullable=False)
     title = db.Column(db.String(100), nullable=False)
     startTime = db.Column(db.DateTime, nullable=False)
-    endTime = db.Column(db.DateTime, nullable=True)
     description = db.Column(db.String(255), nullable=True)
     location = db.Column(db.String(255), nullable=False)
+    address = db.Column(db.String(255), nullable=False)
     imageURL = db.Column(db.String(500), nullable=True)
 
     def __repr__(self):
@@ -78,10 +78,10 @@ class Favorites(db.Model):
             "user_id": self.user_id,
             "title": self.title,
             "startTime": self.startTime.isoformat(),
-            "endTime": self.endTime.isoformat() if self.endTime else None,
             "description": self.description,
             "location": self.location,
             "imageURL": self.imageURL,
+            "address": self.address,
         }
 
 # Ensure that you create the tables
